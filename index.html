@@ -16,16 +16,17 @@
     }
     html,body{height:100%;}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans JP",sans-serif;}
-    .container{max-width:920px;margin:40px auto;padding:24px;}
+    .container{max-width:980px;margin:34px auto;padding:20px;}
     .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 6px 24px rgba(2,6,23,.08);}    
     h1{font-size:clamp(20px,3.2vw,30px);margin:0 0 8px}
     p.sub{margin:0 0 18px;color:var(--muted)}
     .grid{display:grid;gap:16px;grid-template-columns:repeat(12,1fr)}
+    .col-4{grid-column:span 4}
     .col-6{grid-column:span 6}
     .col-12{grid-column:span 12}
-    @media (max-width:760px){.col-6{grid-column:span 12}}
+    @media (max-width:860px){.col-4,.col-6{grid-column:span 12}}
     label{display:block;font-size:14px;color:var(--muted);margin:0 0 6px}
-    input[type="number"], input[type="text"]{width:100%;padding:14px 12px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--text);outline:none;transition:border-color .15s, box-shadow .15s}
+    input[type="number"], input[type="text"]{padding:12px 10px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--text);outline:none;transition:border-color .15s, box-shadow .15s}
     input[type="number"]:focus, input[type="text"]:focus{border-color:var(--ring);box-shadow:0 0 0 3px rgba(56,189,248,.25)}
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .btn{appearance:none;border:1px solid var(--line);background:#f8fafc;color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600}
@@ -40,13 +41,16 @@
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
     .pill{display:inline-block;padding:4px 10px;border-radius:999px;background:#e0f2fe;border:1px solid #bae6fd;color:#075985;font-size:12px}
     .footer{margin-top:14px;color:var(--muted);font-size:12px}
-    .section-title{margin-top:6px;margin-bottom:6px;font-weight:700}
+    .section-title{margin:8px 0 6px;font-weight:800}
     .multiplier-list{display:grid;gap:10px}
     .kbd{padding:2px 6px;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;background:#f8fafc}
 
+    /* 入力の横幅調整 */
+    .short{width:220px;max-width:100%}
+
     /* 追加倍率の入力が隠れないように広げる */
-    .flex-grow{flex:1 1 260px;min-width:220px}
-    .fix-width{width:130px}
+    .flex-grow{flex:1 1 320px;min-width:260px}
+    .fix-width{width:140px}
   </style>
 </head>
 <body>
@@ -58,33 +62,57 @@
       <div class="grid" role="group" aria-label="入力エリア">
         <div class="col-6">
           <label for="atk">攻撃力</label>
-          <input id="atk" type="number" min="0" step="1" placeholder="例: 30000" />
+          <input id="atk" class="short" type="number" min="0" step="1" placeholder="例: 30000" />
         </div>
         <div class="col-6">
           <label for="plus">加撃量</label>
-          <input id="plus" type="number" min="0" step="1" placeholder="例: 3000" />
+          <input id="plus" class="short" type="number" min="0" step="1" placeholder="例: 3000" />
         </div>
         <div class="col-12">
+          <div class="chip mono" id="baseChip">攻撃値 = 攻撃力 + 加撃量 = <span id="atkDisp">0</span> + <span id="plusDisp">0</span> = <strong id="base">0</strong></div>
         </div>
       </div>
 
       <hr style="border: none; border-top:1px solid var(--line); margin:18px 0;" />
 
+      <!-- カテゴリ別倍率 -->
       <div class="grid" role="group" aria-label="倍率エリア">
         <div class="col-12">
-          <div class="section-title">標準倍率</div>
-          <div id="builtinList" class="multiplier-list"></div>
-
-          <div class="section-title" style="margin-top:14px">追加倍率</div>
-          <div id="userMultiplierList" class="multiplier-list"></div>
-
-          <div class="row" style="margin-top:10px">
-            <input id="newName" class="flex-grow" type="text" placeholder="例: 族加撃" />
-            <input id="newValue" class="fix-width" type="number" step="0.01" placeholder="例: 1.20" />
-            <button class="btn" id="addBtn" aria-label="倍率を追加">追加</button>
-            <button class="btn secondary" id="resetBtn" title="デフォルト倍率に戻す">初期化</button>
+          <!-- キャラ倍率 -->
+          <div class="section-title">キャラ倍率</div>
+          <div id="charBuiltin" class="multiplier-list"></div>
+          <div id="charUser" class="multiplier-list"></div>
+          <div class="row" style="margin-top:8px">
+            <input id="charNewName" class="flex-grow" type="text" placeholder="例: 種族相性" />
+            <input id="charNewValue" class="fix-width" type="number" step="0.01" placeholder="例: 1.10" />
+            <button class="btn" id="charAdd">追加</button>
           </div>
-          <p class="footer">ヒント: 追加倍率は乗算（総乗）で適用されます。</p>
+
+          <hr style="border: none; border-top:1px solid var(--line); margin:18px 0;" />
+
+          <!-- 敵の倍率 -->
+          <div class="section-title">敵の倍率</div>
+          <div id="enemyBuiltin" class="multiplier-list"></div>
+          <div id="enemyUser" class="multiplier-list"></div>
+          <div class="row" style="margin-top:8px">
+            <input id="enemyNewName" class="flex-grow" type="text" placeholder="例: 属性耐性ダウン" />
+            <input id="enemyNewValue" class="fix-width" type="number" step="0.01" placeholder="例: 1.25" />
+            <button class="btn" id="enemyAdd">追加</button>
+          </div>
+
+          <hr style="border: none; border-top:1px solid var(--line); margin:18px 0;" />
+
+          <!-- ステージ倍率 -->
+          <div class="section-title">ステージ倍率</div>
+          <div id="stageBuiltin" class="multiplier-list"></div>
+          <div id="stageUser" class="multiplier-list"></div>
+          <div class="row" style="margin-top:8px">
+            <input id="stageNewName" class="flex-grow" type="text" placeholder="例: パネル効果" />
+            <input id="stageNewValue" class="fix-width" type="number" step="0.01" placeholder="例: 1.50" />
+            <button class="btn" id="stageAdd">追加</button>
+            <button class="btn secondary" id="resetBtn" title="初期状態へ">初期化</button>
+          </div>
+          <p class="footer">ヒント: 各カテゴリで追加した倍率は乗算（総乗）で適用されます。敵の「弱点倍率」は数値を変更できます。</p>
         </div>
       </div>
 
@@ -103,7 +131,7 @@
   </div>
 
   <script>
-    // ---- 永続化ヘルパ ----
+    // ---- 永続化 ----
     const store = {
       load(key, fallback){ try{ return JSON.parse(localStorage.getItem(key)) ?? fallback }catch{ return fallback } },
       save(key, value){ try{ localStorage.setItem(key, JSON.stringify(value)) }catch{} }
@@ -113,10 +141,18 @@
     const state = {
       atk: 0,
       plus: 0,
-      builtins: [ // 固定（名前・倍率は編集不可 / チェックのみ）
-        { id: crypto.randomUUID(), name: 'ゲージ', value: 1.20, checked: false },
-      ],
-      userMultipliers: [] // {id, name, value, checked}
+      char: {
+        builtins: [ { id: crypto.randomUUID(), name: 'ゲージ', value: 1.20, checked: false, editable: false } ],
+        user: []
+      },
+      enemy: {
+        builtins: [ { id: crypto.randomUUID(), name: '弱点倍率', value: 3.00, checked: false, editable: true } ],
+        user: []
+      },
+      stage: {
+        builtins: [],
+        user: []
+      }
     }
 
     // ---- 要素参照 ----
@@ -125,70 +161,103 @@
     const $atkDisp = document.getElementById('atkDisp')
     const $plusDisp = document.getElementById('plusDisp')
     const $base = document.getElementById('base')
-    const $builtinList = document.getElementById('builtinList')
-    const $userMultiplierList = document.getElementById('userMultiplierList')
+
+    const el = {
+      charBuiltin: document.getElementById('charBuiltin'),
+      charUser: document.getElementById('charUser'),
+      charNewName: document.getElementById('charNewName'),
+      charNewValue: document.getElementById('charNewValue'),
+      charAdd: document.getElementById('charAdd'),
+
+      enemyBuiltin: document.getElementById('enemyBuiltin'),
+      enemyUser: document.getElementById('enemyUser'),
+      enemyNewName: document.getElementById('enemyNewName'),
+      enemyNewValue: document.getElementById('enemyNewValue'),
+      enemyAdd: document.getElementById('enemyAdd'),
+
+      stageBuiltin: document.getElementById('stageBuiltin'),
+      stageUser: document.getElementById('stageUser'),
+      stageNewName: document.getElementById('stageNewName'),
+      stageNewValue: document.getElementById('stageNewValue'),
+      stageAdd: document.getElementById('stageAdd')
+    }
+
     const $total = document.getElementById('total')
     const $formula = document.getElementById('formula')
-    const $addBtn = document.getElementById('addBtn')
-    const $newName = document.getElementById('newName')
-    const $newValue = document.getElementById('newValue')
     const $resetBtn = document.getElementById('resetBtn')
 
-    // ---- 初期化 ----
     function init(){
-      const saved = store.load('damage-calc-v2', null)
+      const saved = store.load('damage-calc-v3', null)
       if(saved){
         state.atk = Number(saved.atk)||0
         state.plus = Number(saved.plus)||0
-        // builtins は名前や値は固定、チェック状態のみ復元
-        if(Array.isArray(saved.builtins)){
-          state.builtins = state.builtins.map(b=>{
-            const found = saved.builtins.find(x=>x.name===b.name)
-            return found ? { ...b, checked: !!found.checked } : b
+        // builtins: name/keyで対応、チェックや値(editableなもののみ)を復元
+        ;['char','enemy','stage'].forEach(cat=>{
+          const cur = state[cat]
+          const sv = saved[cat]||{}
+          // builtins
+          cur.builtins = cur.builtins.map(b=>{
+            const found = (sv.builtins||[]).find(x=>x.name===b.name)
+            const editable = !!b.editable
+            return found ? { ...b, checked: !!found.checked, value: editable ? Number(found.value)||b.value : b.value } : b
           })
-        }
-        state.userMultipliers = Array.isArray(saved.userMultipliers) ? saved.userMultipliers : []
+          // user
+          cur.user = Array.isArray(sv.user) ? sv.user : []
+        })
       }
 
       $atk.value = state.atk
       $plus.value = state.plus
 
-      renderBuiltins()
-      renderUserMultipliers()
+      renderAll()
       update()
     }
 
-    function persist(){ store.save('damage-calc-v2', state) }
+    function persist(){ store.save('damage-calc-v3', state) }
 
-    // ---- 乗算計算 ----
+    // ---- 共通UI ----
     function product(arr){ return arr.reduce((acc, m)=> acc * (m.checked ? Number(m.value)||1 : 1), 1) }
 
-    // ---- ビルトイン（編集不可） ----
-    function renderBuiltins(){
-      $builtinList.innerHTML = ''
-      state.builtins.forEach((m)=>{
+    function renderBuiltin(container, list){
+      container.innerHTML = ''
+      list.forEach(m=>{
         const row = document.createElement('div')
         row.className = 'checkbox row'
 
         const cb = document.createElement('input')
         cb.type = 'checkbox'
         cb.checked = !!m.checked
-        cb.setAttribute('aria-label', `${m.name} を適用`)
         cb.addEventListener('change', ()=>{ m.checked = cb.checked; update() })
 
         const label = document.createElement('div')
-        label.textContent = `${m.name} × ${m.value.toFixed(2)}`
         label.style.fontWeight = '600'
 
-        row.append(cb, label)
-        $builtinList.appendChild(row)
+        if(m.editable){
+          // 名前固定、値は可変
+          label.textContent = `${m.name} × `
+          const valInput = document.createElement('input')
+          valInput.type = 'number'
+          valInput.step = '0.01'
+          valInput.value = m.value
+          valInput.className = 'fix-width'
+          valInput.addEventListener('input', ()=>{
+            const v = Number(valInput.value)
+            m.value = (Number.isFinite(v) && v>0) ? v : 1
+            update()
+          })
+          row.append(cb, label, valInput)
+        }else{
+          label.textContent = `${m.name} × ${Number(m.value).toFixed(2)}`
+          row.append(cb, label)
+        }
+
+        container.appendChild(row)
       })
     }
 
-    // ---- 追加倍率（編集可） ----
-    function renderUserMultipliers(){
-      $userMultiplierList.innerHTML = ''
-      state.userMultipliers.forEach((m)=>{
+    function renderUser(container, list){
+      container.innerHTML = ''
+      list.forEach((m)=>{
         const row = document.createElement('div')
         row.className = 'checkbox row'
 
@@ -221,17 +290,43 @@
         const del = document.createElement('button')
         del.className = 'btn secondary'
         del.textContent = '削除'
-        del.addEventListener('click', ()=>{
-          state.userMultipliers = state.userMultipliers.filter(mm => mm.id !== m.id)
-          renderUserMultipliers(); update()
-        })
+        del.addEventListener('click', ()=>{ list.splice(list.indexOf(m),1); renderAll(); update() })
 
         row.append(cb, nameInput, multMark, valInput, del)
-        $userMultiplierList.appendChild(row)
+        container.appendChild(row)
       })
     }
 
-    // ---- メイン計算 ----
+    function renderAll(){
+      renderBuiltin(el.charBuiltin, state.char.builtins)
+      renderUser(el.charUser, state.char.user)
+
+      renderBuiltin(el.enemyBuiltin, state.enemy.builtins)
+      renderUser(el.enemyUser, state.enemy.user)
+
+      renderBuiltin(el.stageBuiltin, state.stage.builtins)
+      renderUser(el.stageUser, state.stage.user)
+    }
+
+    // ---- 追加ボタン ----
+    el.charAdd.addEventListener('click', ()=> addUser(state.char, el.charNewName, el.charNewValue))
+    el.enemyAdd.addEventListener('click', ()=> addUser(state.enemy, el.enemyNewName, el.enemyNewValue))
+    el.stageAdd.addEventListener('click', ()=> addUser(state.stage, el.stageNewName, el.stageNewValue))
+
+    function addUser(cat, $name, $val){
+      const name = ($name.value||'倍率').trim()
+      const val = Number($val.value)
+      if(!Number.isFinite(val) || val<=0){
+        alert('倍率は 0 より大きい数値で入力してください（例: 1.20）')
+        return
+      }
+      cat.user.push({ id: crypto.randomUUID(), name, value: val, checked: true })
+      $name.value = ''
+      $val.value = ''
+      renderAll(); update()
+    }
+
+    // ---- 計算 ----
     function update(){
       const atk = Number($atk.value)||0
       const plus = Number($plus.value)||0
@@ -239,7 +334,9 @@
       state.plus = plus
 
       const base = atk + plus
-      const mult = product([...state.builtins, ...state.userMultipliers])
+      const lists = [state.char,state.enemy,state.stage]
+      const mult = lists.map(x=>[...x.builtins,...x.user]).flat()
+                        .reduce((acc,m)=> acc * (m.checked ? Number(m.value)||1 : 1), 1)
       const total = base * mult
 
       $atkDisp.textContent = atk.toLocaleString()
@@ -247,7 +344,7 @@
       $base.textContent = base.toLocaleString()
       $total.textContent = Number.isFinite(total) ? Math.round(total).toLocaleString() : '0'
 
-      const checked = [...state.builtins, ...state.userMultipliers].filter(m=>m.checked)
+      const checked = lists.map(x=>[...x.builtins,...x.user]).flat().filter(m=>m.checked)
       const multText = checked.length ? checked.map(m=>`${m.name}×${Number(m.value).toFixed(2)}`).join(' × ') : '倍率なし'
       const multProd = checked.length ? checked.reduce((acc,m)=> acc * Number(m.value), 1) : 1
       $formula.textContent = `= ${base.toLocaleString()} × ${multProd.toFixed(2)} （${multText}）`
@@ -257,35 +354,26 @@
 
     function refreshFormulaOnly(){
       const base = (Number(state.atk)||0) + (Number(state.plus)||0)
-      const checked = [...state.builtins, ...state.userMultipliers].filter(m=>m.checked)
+      const lists = [state.char,state.enemy,state.stage]
+      const checked = lists.map(x=>[...x.builtins,...x.user]).flat().filter(m=>m.checked)
       const multText = checked.length ? checked.map(m=>`${m.name}×${Number(m.value).toFixed(2)}`).join(' × ') : '倍率なし'
       const multProd = checked.length ? checked.reduce((acc,m)=> acc * Number(m.value), 1) : 1
       $formula.textContent = `= ${base.toLocaleString()} × ${multProd.toFixed(2)} （${multText}）`
     }
 
-    // ---- 追加・初期化 ----
-    $addBtn.addEventListener('click', ()=>{
-      const name = ($newName.value||'倍率').trim()
-      const val = Number($newValue.value)
-      if(!Number.isFinite(val) || val<=0){
-        alert('倍率は 0 より大きい数値で入力してください（例: 1.20）')
-        return
-      }
-      state.userMultipliers.push({ id: crypto.randomUUID(), name, value: val, checked: true })
-      $newName.value = ''
-      $newValue.value = ''
-      renderUserMultipliers(); update()
+    // 初期化
+    document.getElementById('resetBtn').addEventListener('click', ()=>{
+      if(!confirm('倍率リストを初期状態に戻しますか？
+・キャラ: ゲージ×1.20
+・敵: 弱点倍率×3.00
+・ステージ: なし')) return
+      state.char = { builtins: [ { id: crypto.randomUUID(), name: 'ゲージ', value: 1.20, checked: false, editable: false } ], user: [] }
+      state.enemy = { builtins: [ { id: crypto.randomUUID(), name: '弱点倍率', value: 3.00, checked: false, editable: true } ], user: [] }
+      state.stage = { builtins: [], user: [] }
+      renderAll(); update()
     })
 
-    $resetBtn.addEventListener('click', ()=>{
-      if(!confirm('倍率リストを初期状態に戻しますか？（標準: ゲージ×1.20 のみ）')) return
-      // builtins はチェック状態のみリセット
-      state.builtins = [ { id: crypto.randomUUID(), name: 'ゲージ', value: 1.20, checked: false } ]
-      state.userMultipliers = []
-      renderBuiltins(); renderUserMultipliers(); update()
-    })
-
-    // ---- 入力イベント ----
+    // 入力イベント
     $atk.addEventListener('input', update)
     $plus.addEventListener('input', update)
 
@@ -294,4 +382,5 @@
   </script>
 </body>
 </html>
+
 
