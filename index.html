@@ -32,7 +32,6 @@
     .btn{appearance:none;border:1px solid var(--line);background:#f8fafc;color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600}
     .btn:hover{border-color:var(--ring)}
     .btn.secondary{background:#fff}
-    .chip{display:inline-flex;align-items:center;gap:8px;border:1px dashed var(--line);padding:8px 10px;border-radius:999px;color:var(--muted);}
     .checkbox{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid var(--line);flex-wrap:wrap}
     .checkbox input[type="checkbox"]{width:18px;height:18px}
     .muted{color:var(--muted)}
@@ -43,7 +42,6 @@
     .footer{margin-top:14px;color:var(--muted);font-size:12px}
     .section-title{margin:8px 0 6px;font-weight:800}
     .multiplier-list{display:grid;gap:10px}
-    .kbd{padding:2px 6px;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;background:#f8fafc}
 
     /* 入力の横幅調整 */
     .short{width:220px;max-width:100%}
@@ -67,8 +65,6 @@
         <div class="col-6">
           <label for="plus">加撃量</label>
           <input id="plus" class="short" type="number" min="0" step="1" placeholder="例: 3000" />
-        </div>
-        <div class="col-12">
         </div>
       </div>
 
@@ -121,7 +117,7 @@
         <div class="col-12 result">
           <div><span class="pill">計算結果</span></div>
           <div class="value" id="total">0</div>
-          <div class="mono muted" id="formula">= 0 × 1.00 （倍率なし）</div>
+          <div class="mono muted" id="formula">= (0 + 0) × 1.00 （倍率なし）</div>
         </div>
       </div>
 
@@ -157,9 +153,6 @@
     // ---- 要素参照 ----
     const $atk = document.getElementById('atk')
     const $plus = document.getElementById('plus')
-    const $atkDisp = document.getElementById('atkDisp')
-    const $plusDisp = document.getElementById('plusDisp')
-    const $base = document.getElementById('base')
 
     const el = {
       charBuiltin: document.getElementById('charBuiltin'),
@@ -186,21 +179,18 @@
     const $resetBtn = document.getElementById('resetBtn')
 
     function init(){
-      const saved = store.load('damage-calc-v3', null)
+      const saved = store.load('damage-calc-v4', null)
       if(saved){
         state.atk = Number(saved.atk)||0
         state.plus = Number(saved.plus)||0
-        // builtins: name/keyで対応、チェックや値(editableなもののみ)を復元
         ;['char','enemy','stage'].forEach(cat=>{
           const cur = state[cat]
           const sv = saved[cat]||{}
-          // builtins
           cur.builtins = cur.builtins.map(b=>{
             const found = (sv.builtins||[]).find(x=>x.name===b.name)
             const editable = !!b.editable
             return found ? { ...b, checked: !!found.checked, value: editable ? Number(found.value)||b.value : b.value } : b
           })
-          // user
           cur.user = Array.isArray(sv.user) ? sv.user : []
         })
       }
@@ -212,7 +202,7 @@
       update()
     }
 
-    function persist(){ store.save('damage-calc-v3', state) }
+    function persist(){ store.save('damage-calc-v4', state) }
 
     // ---- 共通UI ----
     function product(arr){ return arr.reduce((acc, m)=> acc * (m.checked ? Number(m.value)||1 : 1), 1) }
@@ -232,7 +222,6 @@
         label.style.fontWeight = '600'
 
         if(m.editable){
-          // 名前固定、値は可変
           label.textContent = `${m.name} × `
           const valInput = document.createElement('input')
           valInput.type = 'number'
@@ -334,38 +323,34 @@
 
       const base = atk + plus
       const lists = [state.char,state.enemy,state.stage]
-      const mult = lists.map(x=>[...x.builtins,...x.user]).flat()
-                        .reduce((acc,m)=> acc * (m.checked ? Number(m.value)||1 : 1), 1)
+      const selected = lists.map(x=>[...x.builtins,...x.user]).flat()
+      const mult = selected.reduce((acc,m)=> acc * (m.checked ? Number(m.value)||1 : 1), 1)
       const total = base * mult
 
-      $atkDisp.textContent = atk.toLocaleString()
-      $plusDisp.textContent = plus.toLocaleString()
-      $base.textContent = base.toLocaleString()
       $total.textContent = Number.isFinite(total) ? Math.round(total).toLocaleString() : '0'
 
-      const checked = lists.map(x=>[...x.builtins,...x.user]).flat().filter(m=>m.checked)
+      const checked = selected.filter(m=>m.checked)
       const multText = checked.length ? checked.map(m=>`${m.name}×${Number(m.value).toFixed(2)}`).join(' × ') : '倍率なし'
       const multProd = checked.length ? checked.reduce((acc,m)=> acc * Number(m.value), 1) : 1
-      $formula.textContent = `= ${base.toLocaleString()} × ${multProd.toFixed(2)} （${multText}）`
+      $formula.textContent = `= (${atk.toLocaleString()} + ${plus.toLocaleString()}) × ${multProd.toFixed(2)} （${multText}）`
 
       persist()
     }
 
     function refreshFormulaOnly(){
-      const base = (Number(state.atk)||0) + (Number(state.plus)||0)
+      const atk = Number(state.atk)||0
+      const plus = Number(state.plus)||0
+      const base = atk + plus
       const lists = [state.char,state.enemy,state.stage]
       const checked = lists.map(x=>[...x.builtins,...x.user]).flat().filter(m=>m.checked)
       const multText = checked.length ? checked.map(m=>`${m.name}×${Number(m.value).toFixed(2)}`).join(' × ') : '倍率なし'
       const multProd = checked.length ? checked.reduce((acc,m)=> acc * Number(m.value), 1) : 1
-      $formula.textContent = `= ${base.toLocaleString()} × ${multProd.toFixed(2)} （${multText}）`
+      $formula.textContent = `= (${atk.toLocaleString()} + ${plus.toLocaleString()}) × ${multProd.toFixed(2)} （${multText}）`
     }
 
     // 初期化
     document.getElementById('resetBtn').addEventListener('click', ()=>{
-      if(!confirm('倍率リストを初期状態に戻しますか？
-・キャラ: ゲージ×1.20
-・敵: 弱点倍率×3.00
-・ステージ: なし')) return
+      if(!confirm('倍率リストを初期状態に戻しますか？\n・キャラ: ゲージ×1.20\n・敵: 弱点倍率×3.00\n・ステージ: なし')) return
       state.char = { builtins: [ { id: crypto.randomUUID(), name: 'ゲージ', value: 1.20, checked: false, editable: false } ], user: [] }
       state.enemy = { builtins: [ { id: crypto.randomUUID(), name: '弱点倍率', value: 3.00, checked: false, editable: true } ], user: [] }
       state.stage = { builtins: [], user: [] }
@@ -381,5 +366,3 @@
   </script>
 </body>
 </html>
-
-
