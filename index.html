@@ -78,8 +78,8 @@
           <div id="charBuiltin" class="multiplier-list"></div>
           <div id="charUser" class="multiplier-list"></div>
           <div class="row" style="margin-top:8px">
-            <input id="charNewName" class="flex-grow" type="text" placeholder="例: 種族相性" />
-            <input id="charNewValue" class="fix-width" type="number" step="0.01" placeholder="例: 1.10" />
+            <input id="charNewName" class="flex-grow" type="text" />
+            <input id="charNewValue" class="fix-width" type="number" step="0.01"/>
             <button class="btn" id="charAdd">追加</button>
           </div>
 
@@ -107,7 +107,6 @@
             <button class="btn" id="stageAdd">追加</button>
             <button class="btn secondary" id="resetBtn" title="初期状態へ">初期化</button>
           </div>
-          <p class="footer">ヒント: 各カテゴリで追加した倍率は乗算（総乗）で適用されます。敵の「弱点倍率」は数値を変更できます。</p>
         </div>
       </div>
 
@@ -137,15 +136,30 @@
       atk: 0,
       plus: 0,
       char: {
-        builtins: [ { id: crypto.randomUUID(), name: 'ゲージ', value: 1.20, checked: false, editable: false } ],
+        builtins: [ 
+          { id: crypto.randomUUID(), name: 'ゲージ', value: 1.20, checked: false, editable: false }
+          { id: crypto.randomUUID(), name: 'キラー', value: 1.50, checked: false, editable: true }
+          { id: crypto.randomUUID(), name: '超ADW', value: 1.30, checked: false, editable: false }
+          { id: crypto.randomUUID(), name: '超AW', value: 1.30, checked: false, editable: true }
+          { id: crypto.randomUUID(), name: '剣', value: 1.50, checked: false, editable: false }
+          { id: crypto.randomUUID(), name: '守護獣', value: 1.20, checked: false, editable: true }
+  　　　　　{ id: crypto.randomUUID(), name: '紋章', value: 1.375, checked: false, editable: true }　 
+        ],
         user: []
       },
       enemy: {
-        builtins: [ { id: crypto.randomUUID(), name: '弱点倍率', value: 3.00, checked: false, editable: true } ],
+        builtins: [ 
+          { id: crypto.randomUUID(), name: '直殴り倍率', value: 2.0, checked: false, editable: true }
+          { id: crypto.randomUUID(), name: '弱点倍率', value: 3.0, checked: false, editable: true }
+        　 { id: crypto.randomUUID(), name: '防御ダウン倍率', value: 3.0, checked: false, editable: true }
+        ],
         user: []
       },
       stage: {
-        builtins: [],
+        builtins: [
+ 　       { id: crypto.randomUUID(), name: '属性倍率', value: 2.0, checked: false, editable: true }
+          
+        ],
         user: []
       }
     }
