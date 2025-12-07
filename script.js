@@ -87,7 +87,6 @@ function calculate() {
     // 魔法陣ブースト
     let mboostMultiplier = 1.0;
     if (document.getElementById('chk_mboost').checked) {
-        // HTML側が <select> になっていたため、それに合わせました
         mboostMultiplier = parseFloat(document.getElementById('mboostSelect').value) || 1.0;
     }
 
@@ -107,6 +106,12 @@ function calculate() {
     let guardianMultiplier = 1.0;
     if (document.getElementById('chk_guardian').checked) {
         guardianMultiplier = parseFloat(document.getElementById('guardianRate').value) || 1.0;
+    }
+
+    // SS倍率
+    let SSMultiplier = 1.0;
+    if (document.getElementById('chk_SS').checked) {
+        SSMultiplier = parseFloat(document.getElementById('SSRate').value) || 1.0;
     }
 
     // --- 4. 紋章 ---
@@ -152,14 +157,15 @@ function calculate() {
         * wboostMultiplier
         * mboostMultiplier
         * killerMultiplier
-        * buffMultiplier      // 修正箇所：変数名を修正
-        * guardianMultiplier  // 修正箇所：変数名を修正
+        * buffMultiplier      
+        * guardianMultiplier
+        * SSMultiplier;       
         * emb1 * emb2 * emb3 * emb4 // 紋章
         * weakMultiplier
         * naguriMultiplier
         * hontaiMultiplier
         * defMultiplier;
-
+   
     // 結果表示 (小数点以下切り捨て)
     document.getElementById('result').innerText = Math.floor(finalDamage).toLocaleString();
 }
