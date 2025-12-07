@@ -100,6 +100,13 @@ function calculate() {
         }
     }
 
+    // 弱点倍率
+    let weakMultiplier = 1.0;
+    if (document.getElementById('chk_weak').checked) {
+        const val = parseFloat(document.getElementById('weakRate').value);
+        if (!isNaN(val)) weakMultiplier = val;
+    }
+
     // 最終計算
     const finalDamage = attack 
         * gaugeMultiplier   // ゲージ
@@ -110,6 +117,7 @@ function calculate() {
         * enemyMultiplier   // ワープ数
         * wboostMultiplier // ウォールブースト
         * mboostMultiplier // 魔法陣ブースト
+        * weakMultiplier // 弱点
         ;
 
     // 結果表示
