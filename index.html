@@ -278,16 +278,23 @@
                     <option value="1.99">属性効果超UP (x1.99)</option>
                     <option value="2.9998">属性効果超絶UP (x2.9998)</option>
                 </select>
-            </div>
 
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc;">
+                    <label class="check-label">
+                        <input type="checkbox" id="chk_stageSpecial" onchange="calculate()">
+                        超バランス型
+                    </label>
+                    <div style="font-size: 0.85rem; color: #555; margin-top: 5px;">
+                        倍率: x<span id="stageRealRate">1.00</span>
+                    </div>
+                </div>
+            </div>
             <div class="grid-item">
                 <label class="check-label">
-                    <input type="checkbox" id="chk_stageSpecial" onchange="calculate()">
-                    超バランス型
+                    <input type="checkbox" id="chk_gimmck" onchange="toggleInput('gimmckRate', 'chk_gimmck')">
+                    ギミック倍率
                 </label>
-                <div style="font-size: 0.85rem; color: #555; margin-top: 5px;">
-                    倍率: x<span id="stageRealRate">1.00</span>
-                </div>
+                <input type="number" id="gimmckRate" step="0.01" oninput="calculate()" disabled>
             </div>
             
             <div class="grid-item">
