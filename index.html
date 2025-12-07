@@ -92,7 +92,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
-            align-items: start;
+            align-items: stretch; /* 高さを揃える */
         }
 
         @media (max-width: 600px) {
@@ -101,28 +101,38 @@
             }
         }
 
-        /* --- グリッド内のアイテム --- */
+        /* --- グリッド内のアイテム (ここを修正) --- */
         .grid-item {
             display: flex;
             flex-direction: column;
             gap: 5px;
+            height: 100%; /* セルいっぱいに高さを確保 */
+        }
+
+        /* 入力欄やボタンを強制的に下揃えにする設定 */
+        .grid-item > input[type="number"],
+        .grid-item > select,
+        .grid-item > button {
+            margin-top: auto;
         }
 
         /* --- チェックボックス付きラベル --- */
         .check-label {
             display: flex;
-            align-items: center;
+            align-items: start; /* テキストが複数行になっても上揃え */
             gap: 8px;
             font-weight: bold;
             color: #9aa0a6;
             font-size: 0.85rem;
             cursor: pointer;
             min-height: 24px;
+            line-height: 1.4; /* 行間を少し広げて読みやすく */
         }
         
         input[type="checkbox"] {
             transform: scale(1.2);
             cursor: pointer;
+            margin-top: 2px; /* テキストの1行目にチェックボックスを合わせる */
         }
 
         /* --- トグルボタン --- */
@@ -237,7 +247,7 @@
             <div class="grid-item">
                 <label class="check-label">
                     <input type="checkbox" id="chk_warp" onchange="toggleInput('warpCount', 'chk_warp')">
-                    超アンチワープ（ワープ数）
+                    超アンチワープ<br>（ワープ数）
                 </label>
                 <input type="number" id="warpCount" placeholder="数" value="1" oninput="calculate()" disabled>
             </div>
@@ -254,7 +264,7 @@
     </div>
 
     <div class="category-section">
-        <h3 class="category-title">特殊条件・敵倍率</h3>
+        <h3 class="category-title">紋章</h3>
         
         <div class="grid-4-col">
             <div class="grid-item">
@@ -285,13 +295,19 @@
         emb1: 1.25, emb2: 1.10, emb3: 1.10, emb4: 1.08
     };
 
+    // 初期状態
     let activeStates = {
         ab1: false, ab2: false,
-        emb1: false, ene2: false
+        emb1: false, emb2: false, emb3: false, emb4: false
     };
 
     // ボタンのトグル処理
     function toggleButton(id) {
+        // activeStatesにキーがない場合の安全策
+        if (activeStates[id] === undefined) {
+            activeStates[id] = false;
+        }
+
         activeStates[id] = !activeStates[id];
         const btn = document.getElementById(id);
         if (activeStates[id]) {
@@ -316,7 +332,7 @@
         // 1. 攻撃力
         const attack = parseFloat(document.getElementById('attack').value) || 0;
 
-        // 2. ゲージ倍率 (新規追加)
+        // 2. ゲージ倍率
         let gaugeMultiplier = 1.0;
         if (document.getElementById('chk_gauge').checked) {
             gaugeMultiplier = 1.2;
@@ -355,7 +371,7 @@
             enemyMultiplier = 1 + (count * 0.05);
         }
 
-        // 最終計算 (ゲージ倍率を追加)
+        // 最終計算
         const finalDamage = attack * gaugeMultiplier * buttonMultiplier * msMultiplier * sokoMultiplier * customMultiplier * enemyMultiplier;
 
         // 結果表示
