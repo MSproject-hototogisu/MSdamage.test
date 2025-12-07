@@ -205,6 +205,14 @@ function calculate() {
         gimmickMultiplier = parseFloat(gimInput.value) || 1.0;
     }
 
+    // 地雷倍率
+    let mineMultiplier = 1.0;
+    const mineCheck = document.getElementById('chk_mine');
+    const mineInput = document.getElementById('mineRate');
+    if (mineCheck && mineCheck.checked && mineInput) {
+        mineMultiplier = parseFloat(mineInput.value) || 1.0;
+    }
+
     // --- ステージ倍率 ---
     const stageSelect = document.getElementById('stageEffectSelect');
     const stageCheck = document.getElementById('chk_stageSpecial');
@@ -250,6 +258,7 @@ function calculate() {
         * hontaiMultiplier
         * defMultiplier
         * gimmickMultiplier
+        * mineMultiplier
         * stageMultiplier;
     
     // 結果表示
