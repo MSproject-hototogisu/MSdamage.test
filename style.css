@@ -215,19 +215,34 @@ input, select, button {
         font-size: 12px;  /* 入力文字サイズも微調整 */
     }
 
-    /* --- 結果表示欄の修正 --- */
-    .result-box {
-        padding: 15px 10px; /* 余白を少し狭める */
-        gap: 10px;          /* 「最終ダメージ」と数字の間隔を詰める */
-        flex-wrap: nowrap;  /* ボックス自体の折り返しも禁止 */
-    }
+.result-box {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #fff;
+    border: 3px solid var(--primary-color);
+    border-radius: 10px;
+    text-align: center;
+    
+    display: flex;
+    flex-direction: column; /* ★変更：要素を縦に積む指定 */
+    justify-content: center;
+    align-items: center;
+    gap: 5px; /* ラベルと数値の間隔 */
+}
 
-    .result-label {
-        white-space: nowrap; /* ★重要：文字の折り返しを強制的に禁止 */
-        font-size: 14px;     /* スマホでは少し文字を小さく */
-    }
+.result-label {
+    font-size: 16px; /* ラベルは少し控えめなサイズに */
+    font-weight: bold;
+    color: var(--text-color);
+}
 
-    .result-value {
-        font-size: 24px;     /* 数値が大きすぎてはみ出ないよう調整 */
-    }
+.result-value {
+    font-size: 32px; /* 数値は大きく */
+    font-weight: bold;
+    color: var(--text-color);
+    
+    /* ★追加：桁数が画面幅を超えた場合に自動で折り返す設定 */
+    word-break: break-all; 
+    line-height: 1.2;
+}
 }
