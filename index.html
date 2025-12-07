@@ -80,17 +80,17 @@
 
             <div class="grid-item">
                 <label class="check-label">
-                    <input type="checkbox" id="chk_complex" onchange="toggleComplexInputs()">
+                    <input type="checkbox" id="chk_wboost" onchange="togglewboostInputs()">
                     ブースト (値/4)
                 </label>
                 <div class="bottom-stack">
-                    <select id="complexGrade" onchange="calculate()" disabled>
+                    <select id="wboostGrade" onchange="calculate()" disabled>
                         <option value="1.5">無印 (1.5)</option>
                         <option value="2.0" selected>M (2.0)</option>
                         <option value="2.5">L (2.5)</option>
                         <option value="3.0">EL (3.0)</option>
                     </select>
-                    <input type="number" id="complexVal" placeholder="数値を入力" value="4" oninput="calculate()" disabled>
+                    <input type="number" id="wboostVal" placeholder="数値を入力" value="4" oninput="calculate()" disabled>
                 </div>
             </div>
 
