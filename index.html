@@ -202,10 +202,23 @@
 
             <div class="grid-item">
                 <label class="check-label">
-                    <input type="checkbox" id="chk_size" onchange="toggleInput('sizeSelect', 'chk_size')">
+                    <input type="checkbox" id="chk_ms" onchange="toggleInput('msSelect', 'chk_ms')">
                     マインスイーパー
                 </label>
-                <select id="sizeSelect" onchange="calculate()" disabled>
+                <select id="msSelect" onchange="calculate()" disabled>
+                    <option value="1.5">無印 (x1.5)</option>
+                    <option value="2.0" selected>M (x2.0)</option>
+                    <option value="2.5">L (x2.5)</option>
+                    <option value="3.0">EL (x3.0)</option>
+                </select>
+            </div>
+
+            <div class="grid-item">
+                <label class="check-label">
+                    <input type="checkbox" id="chk_soko" onchange="toggleInput('sokoSelect', 'chk_soko')">
+                    底力
+                </label>
+                <select id="sokoSelect" onchange="calculate()" disabled>
                     <option value="1.5">無印 (x1.5)</option>
                     <option value="2.0" selected>M (x2.0)</option>
                     <option value="2.5">L (x2.5)</option>
@@ -220,6 +233,8 @@
                 </label>
                 <input type="number" id="warpCount" placeholder="数" value="1" oninput="calculate()" disabled>
             </div>
+
+
 
             <div class="grid-item">
                 <label class="check-label">
@@ -286,29 +301,35 @@
 
     // 計算のメイン処理
     function calculate() {
-        // 1. 攻撃力
+        // 攻撃力
         const attack = parseFloat(document.getElementById('attack').value) || 0;
 
-        // 2. ボタン倍率
+        // ボタン倍率
         let buttonMultiplier = 1.0;
         for (const [id, isActive] of Object.entries(activeStates)) {
             if (isActive) buttonMultiplier *= BUTTON_VALUES[id];
         }
 
-        // 3. マインスイーパー (サイズ補正)
-        let sizeMultiplier = 1.0;
-        if (document.getElementById('chk_size').checked) {
-            sizeMultiplier = parseFloat(document.getElementById('sizeSelect').value);
+        // マインスイーパー
+        let msMultiplier = 1.0;
+        if (document.getElementById('chk_ms').checked) {
+            msMultiplier = parseFloat(document.getElementById('msSelect').value);
+        }
+        
+        // 底力
+        let sokoMultiplier = 1.0;
+        if (document.getElementById('chk_soko').checked) {
+            sokoMultiplier = parseFloat(document.getElementById('sokoSelect').value);
         }
 
-        // 4. キラー倍率 (任意倍率)
+        // キラー倍率
         let customMultiplier = 1.0;
         if (document.getElementById('chk_custom').checked) {
             const val = parseFloat(document.getElementById('customRate').value);
             if (!isNaN(val)) customMultiplier = val;
         }
 
-        // 5. ワープ数による倍率
+        // ワープ数による倍率
         let enemyMultiplier = 1.0;
         if (document.getElementById('chk_warp').checked) {
             const count = parseFloat(document.getElementById('warpCount').value) || 0;
@@ -316,11 +337,11 @@
             enemyMultiplier = 1 + (count * 0.05);
         }
 
-        // 6. 紋章などの固定倍率以外の特殊計算があればここに追加
+        // 紋章などの固定倍率以外の特殊計算があればここに追加
         // (今回はすべて buttonMultiplier に含まれているか、上記で計算済み)
 
-        // 7. 最終計算
-        const finalDamage = attack * buttonMultiplier * sizeMultiplier * customMultiplier * enemyMultiplier;
+        // 最終計算
+        const finalDamage = attack * buttonMultiplier * msMultiplier * customMultiplier * enemyMultiplier;
 
         // 結果表示
         document.getElementById('result').innerText = Math.floor(finalDamage).toLocaleString();
