@@ -170,3 +170,48 @@ input[type="checkbox"] {
     font-weight: bold;
     color: var(--text-color);
 }
+
+/* --- 1. 全体の基本文字サイズを小さく設定 --- */
+body {
+    font-size: 13px; /* 16px(標準) → 13px に縮小 */
+}
+
+/* 入力欄やボタンの中の文字も連動して小さくする */
+input, select, button {
+    font-size: 13px;
+}
+
+/* --- 2. スマホ（画面幅768px以下）向けの特別設定 --- */
+@media (max-width: 768px) {
+    
+    /* 画面を有効に使うため、外枠の余白を減らす */
+    .container {
+        padding: 15px 10px;
+    }
+
+    /* ★ここが重要：強制的に2列（2段組）にする設定 */
+    .grid-4-col {
+        display: grid;
+        /* repeat(2, 1fr) で均等に2分割 */
+        grid-template-columns: repeat(2, 1fr) !important; 
+        gap: 6px; /* 列と列の隙間を狭くする */
+    }
+
+    /* 各ボックス内の余白を少し詰める */
+    .grid-item {
+        padding: 8px 5px;
+    }
+
+    /* チェックボックスのラベル文字をさらに小さく（改行防止） */
+    .check-label {
+        font-size: 11px; 
+        letter-spacing: -0.5px; /* 文字間隔を少し詰める */
+    }
+
+    /* 入力欄をスマホ用にスリムにする */
+    input[type="number"], select {
+        padding: 4px;     /* 内側の余白を減らす */
+        height: 30px;     /* 高さを少し低く */
+        font-size: 12px;  /* 入力文字サイズも微調整 */
+    }
+}
