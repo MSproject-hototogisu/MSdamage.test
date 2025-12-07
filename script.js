@@ -197,6 +197,22 @@ function calculate() {
         defMultiplier = parseFloat(defInput.value) || 1.0;
     }
 
+       // 怒り倍率
+    let angryMultiplier = 1.0;
+    const angryCheck = document.getElementById('chk_angry');
+    const angrySelect = document.getElementById('angrySelect');
+    if (angryCheck && angryCheck.checked && angrySelect) {
+        angryMultiplier = parseFloat(angrySelect.value) || 1.0;
+    }
+
+       // 特殊倍率
+    let speMultiplier = 1.0;
+    const speCheck = document.getElementById('chk_special');
+    const speInput = document.getElementById('specialRate');
+    if (speCheck && speCheck.checked && speInput) {
+        speMultiplier = parseFloat(speInput.value) || 1.0;
+    }
+
     // ギミック倍率
     let gimmickMultiplier = 1.0;
     const gimCheck = document.getElementById('chk_gimmick');
@@ -211,14 +227,6 @@ function calculate() {
     const mineInput = document.getElementById('mineRate');
     if (mineCheck && mineCheck.checked && mineInput) {
         mineMultiplier = parseFloat(mineInput.value) || 1.0;
-    }
-
-    // 怒り倍率
-    let angryMultiplier = 1.0;
-    const angryCheck = document.getElementById('chk_angry');
-    const angrySelect = document.getElementById('angrySelect');
-    if (angryCheck && angryCheck.checked && angrySelect) {
-        angryMultiplier = parseFloat(angrySelect.value) || 1.0;
     }
 
     // --- ステージ倍率 ---
@@ -265,6 +273,7 @@ function calculate() {
         * naguriMultiplier
         * hontaiMultiplier
         * defMultiplier
+        * speMultiplier
         * gimmickMultiplier
         * mineMultiplier
         * angryMultiplier
