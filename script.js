@@ -86,6 +86,14 @@ function calculate() {
         sokoMultiplier = parseFloat(sokoSelect.value) || 1.0;
     }
 
+    // 底力
+    let auraMultiplier = 1.0;
+    const auraCheck = document.getElementById('chk_aura');
+    const auraSelect = document.getElementById('auraSelect');
+    if (auraCheck && auraCheck.checked && auraSelect) {
+        auraMultiplier = parseFloat(auraSelect.value) || 1.0;
+    }
+
     // ウォールブースト
     let wboostMultiplier = 1.0;
     const wbCheck = document.getElementById('chk_wboost');
@@ -223,6 +231,7 @@ function calculate() {
         * msMultiplier
         * warpMultiplier
         * sokoMultiplier
+        * auraMultiplier
         * wboostMultiplier
         * mboostMultiplier
         * killerMultiplier
