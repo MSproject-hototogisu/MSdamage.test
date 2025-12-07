@@ -31,9 +31,21 @@ function togglewboostInputs() {
    計算メイン処理
 ------------------------------------------------------- */
 function calculate() {
-    // --- 1. 基本攻撃力 ---
+    // --- 1. 攻撃力の計算 (素の攻撃力 + 加撃) ---
     const attackElem = document.getElementById('attack');
-    const attack = attackElem ? (parseFloat(attackElem.value) || 0) : 0;
+    const bonusElem = document.getElementById('attackBonus');
+
+    const baseAttack = attackElem ? (parseFloat(attackElem.value) || 0) : 0;
+    const bonusAttack = bonusElem ? (parseFloat(bonusElem.value) || 0) : 0;
+    
+    // ベースとなる「実際の攻撃力」
+    const actualAttack = baseAttack + bonusAttack;
+
+    // 画面上の合計攻撃力表示を更新
+    const totalDisplay = document.getElementById('totalAttackDisplay');
+    if (totalDisplay) {
+        totalDisplay.innerText = actualAttack.toLocaleString();
+    }
 
     // --- 2. ゲージ (1.2倍) ---
     const gaugeElem = document.getElementById('chk_gauge');
@@ -171,7 +183,7 @@ function calculate() {
         defMultiplier = parseFloat(defInput.value) || 1.0;
     }
 
-    // ギミック倍率 (ここもエラー原因の可能性大：存在確認を追加)
+    // ギミック倍率
     let gimmickMultiplier = 1.0;
     const gimCheck = document.getElementById('chk_gimmick');
     const gimInput = document.getElementById('gimmickRate');
@@ -179,13 +191,12 @@ function calculate() {
         gimmickMultiplier = parseFloat(gimInput.value) || 1.0;
     }
 
-    // --- 【新規追加】ステージ倍率 ---
+    // --- ステージ倍率 ---
     const stageSelect = document.getElementById('stageEffectSelect');
     const stageCheck = document.getElementById('chk_stageSpecial');
     
     let stageMultiplier = 1.0;
     
-    // ステージ倍率要素が存在する場合のみ計算
     if (stageSelect && stageCheck) {
         const stageBase = parseFloat(stageSelect.value) || 1.0;
         const isStageSpecial = stageCheck.checked;
@@ -196,7 +207,7 @@ function calculate() {
             stageMultiplier = ((stageBase - 1) / 0.33) * 0.596 + 1;
         }
 
-        // 画面上の実質倍率表示を更新
+        // 画面上の実質倍率表示を更新 (小数点第5位まで表示)
         const displayElem = document.getElementById('stageRealRate');
         if (displayElem) {
             displayElem.innerText = Math.floor(stageMultiplier * 100000) / 100000;
@@ -204,7 +215,8 @@ function calculate() {
     }
 
     // --- 最終計算 ---
-    const finalDamage = attack 
+    // ★ここで actualAttack (素+加撃) を使用しています
+    const finalDamage = actualAttack 
         * gaugeMultiplier
         * ab1Multiplier 
         * ab2Multiplier
