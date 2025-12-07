@@ -145,6 +145,14 @@ function calculate() {
         SSMultiplier = parseFloat(ssInput.value) || 1.0;
     }
 
+    // その他倍率
+    let otherMultiplier = 1.0;
+    const otherCheck = document.getElementById('chk_other');
+    const otherInput = document.getElementById('otherRate');
+    if (otherCheck && otherCheck.checked && otherInput) {
+        otherMultiplier = parseFloat(otherInput.value) || 1.0;
+    }
+
     // --- 4. 紋章 ---
     const e1 = document.getElementById('chk_emb1');
     const e2 = document.getElementById('chk_emb2');
@@ -234,7 +242,8 @@ function calculate() {
         * killerMultiplier
         * buffMultiplier      
         * guardianMultiplier
-        * SSMultiplier      
+        * SSMultiplier
+        * otherMultiplier 
         * emb1 * emb2 * emb3 * emb4 
         * weakMultiplier
         * naguriMultiplier
