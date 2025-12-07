@@ -117,10 +117,17 @@
                         <option value="1.5" selected>無印 (×1.5)</option>
                         <option value="2.0">M (×2.0)</option>
                         <option value="2.5">L (×2.5)</option>
+                        <option value="3.0">EL (×3.0)</option>
                     </select>
-                    <input type="number" id="wboostVal" placeholder="壁数" oninput="calculate()" disabled>
+                    
+                    <select id="wboostVal" onchange="calculate()" disabled>
+                        <option value="1" selected>1壁</option>
+                        <option value="2">2壁</option>
+                        <option value="3">3壁</option>
+                        <option value="4">4壁</option>
+                    </select>
                 </div>
-            </div> 
+            </div>
             
             <div class="grid-item">
                 <label class="check-label">
