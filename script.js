@@ -107,6 +107,20 @@ function calculate() {
         if (!isNaN(val)) weakMultiplier = val;
     }
 
+    // 直殴り倍率
+    let naguriMultiplier = 1.0;
+    if (document.getElementById('chk_naguri').checked) {
+        const val = parseFloat(document.getElementById('naguriRate').value);
+        if (!isNaN(val)) naguriMultiplier = val;
+    }
+
+    // 本体倍率
+    let hontaiMultiplier = 1.0;
+    if (document.getElementById('chk_hontai').checked) {
+        const val = parseFloat(document.getElementById('hontaiRate').value);
+        if (!isNaN(val)) hontaiMultiplier = val;
+    }
+
     // 最終計算
     const finalDamage = attack 
         * gaugeMultiplier   // ゲージ
@@ -118,6 +132,8 @@ function calculate() {
         * wboostMultiplier // ウォールブースト
         * mboostMultiplier // 魔法陣ブースト
         * weakMultiplier // 弱点
+        * naguriMultiplier // 直殴り
+        * hontaiMultiplier // 本体倍率
         ;
 
     // 結果表示
