@@ -275,6 +275,14 @@
 
             <div class="grid-item">
                 <label class="check-label">
+                    <input type="checkbox" id="chk_mine" onchange="toggleInput('mineRate', 'chk_mine')">
+                    地雷倍率
+                </label>
+                <input type="number" id="mineRate" step="0.01" oninput="calculate()" disabled>
+            </div>
+
+            <div class="grid-item">
+                <label class="check-label">
                     <input type="checkbox" id="chk_special" onchange="toggleInput('specialRate', 'chk_special')">
                     特殊倍率
                 </label>
@@ -315,14 +323,6 @@
                     ギミック倍率
                 </label>
                 <input type="number" id="gimmickRate" step="0.01" oninput="calculate()" disabled>
-            </div>
-
-            <div class="grid-item">
-                <label class="check-label">
-                    <input type="checkbox" id="chk_mine" onchange="toggleInput('mineRate', 'chk_mine')">
-                    地雷倍率
-                </label>
-                <input type="number" id="mineRate" step="0.01" oninput="calculate()" disabled>
             </div>
             
         </div>
