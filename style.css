@@ -237,7 +237,7 @@ input, select, button {
 }
 
 .result-value {
-    font-size: 32px; /* 数値は大きく */
+    font-size: 24px; /* 数値は大きく */
     font-weight: bold;
     color: var(--text-color);
     
