@@ -1,3 +1,11 @@
+// --- ウォールブースト倍率定義 ---
+// 1壁, 2壁, 3壁, 4壁 の順で倍率を定義
+const WALL_BOOST_DATA = {
+    "1.5": { 1: 1.12, 2: 1.25, 3: 1.37, 4: 1.5 }, // 無印
+    "2.0": { 1: 1.25,  2: 1.5,  3: 1.75,  4: 2.0 }, // M
+    "2.5": { 1: 1.37, 2: 1.75, 3: 2.12, 4: 2.5 }, // L
+};
+
 /* -------------------------------------------------------
    入力欄の有効/無効を切り替える関数
 ------------------------------------------------------- */
@@ -38,7 +46,6 @@ function calculate() {
     const baseAttack = attackElem ? (parseFloat(attackElem.value) || 0) : 0;
     const bonusAttack = bonusElem ? (parseFloat(bonusElem.value) || 0) : 0;
     
-    // ベースとなる「実際の攻撃力」
     const actualAttack = baseAttack + bonusAttack;
 
     // 画面上の合計攻撃力表示を更新
@@ -61,9 +68,17 @@ function calculate() {
     const ab2Elem = document.getElementById('chk_ab2');
     let ab2Multiplier = (ab2Elem && ab2Elem.checked) ? 3.0 : 1.0;
 
-   // クリティカル (×7.5)
+    // クリティカル (×7.5)
     const ab3Elem = document.getElementById('chk_ab3');
-    let ab3Multiplier = (ab3Elem && ab2Elem.checked) ? 7.5 : 1.0;
+    let ab3Multiplier = (ab3Elem && ab3Elem.checked) ? 7.5 : 1.0;
+
+    // パワーオーラ (直前のHTMLに含まれていたため維持)
+    let auraMultiplier = 1.0;
+    const auraCheck = document.getElementById('chk_aura');
+    const auraSelect = document.getElementById('auraSelect');
+    if (auraCheck && auraCheck.checked && auraSelect) {
+        auraMultiplier = parseFloat(auraSelect.value) || 1.0;
+    }
 
     // マインスイーパー
     let msMultiplier = 1.0;
@@ -90,18 +105,18 @@ function calculate() {
         sokoMultiplier = parseFloat(sokoSelect.value) || 1.0;
     }
 
-    // ウォールブースト
+    // ウォールブースト (等級テーブルを使用する方式)
     let wboostMultiplier = 1.0;
     const wbCheck = document.getElementById('chk_wboost');
     const wbGrade = document.getElementById('wboostGrade');
     const wbVal = document.getElementById('wboostVal');
+    
     if (wbCheck && wbCheck.checked && wbGrade && wbVal) {
-        const grade = parseFloat(wbGrade.value) || 1.5;
-        // セレクトボックスの値を数値として取得
-        const val = parseFloat(wbVal.value) || 0;
-        
-        if (val > 0) {
-            wboostMultiplier = 1 + ((grade - 1) * (val / 4)); 
+        const gradeKey = wbGrade.value;
+        const valKey = wbVal.value;
+        // 定義データから取得 (なければ1.0)
+        if (WALL_BOOST_DATA[gradeKey] && WALL_BOOST_DATA[gradeKey][valKey]) {
+            wboostMultiplier = WALL_BOOST_DATA[gradeKey][valKey];
         }
     }
 
@@ -197,7 +212,7 @@ function calculate() {
         defMultiplier = parseFloat(defInput.value) || 1.0;
     }
 
-       // 怒り倍率
+    // 怒り倍率
     let angryMultiplier = 1.0;
     const angryCheck = document.getElementById('chk_angry');
     const angrySelect = document.getElementById('angrySelect');
@@ -205,7 +220,7 @@ function calculate() {
         angryMultiplier = parseFloat(angrySelect.value) || 1.0;
     }
 
-       // 特殊倍率
+    // 特殊倍率 (敵カテゴリの追加分)
     let speMultiplier = 1.0;
     const speCheck = document.getElementById('chk_special');
     const speInput = document.getElementById('specialRate');
@@ -215,7 +230,8 @@ function calculate() {
 
     // ギミック倍率
     let gimmickMultiplier = 1.0;
-    const gimCheck = document.getElementById('chk_gimmick');
+    // 注: HTML側のIDが "chk_gimmick" か "chk_gimmck" か確認してください
+    const gimCheck = document.getElementById('chk_gimmick'); 
     const gimInput = document.getElementById('gimmickRate');
     if (gimCheck && gimCheck.checked && gimInput) {
         gimmickMultiplier = parseFloat(gimInput.value) || 1.0;
@@ -258,6 +274,7 @@ function calculate() {
         * ab1Multiplier 
         * ab2Multiplier
         * ab3Multiplier
+        * auraMultiplier // パワーオーラ
         * msMultiplier
         * warpMultiplier
         * sokoMultiplier
@@ -273,10 +290,10 @@ function calculate() {
         * naguriMultiplier
         * hontaiMultiplier
         * defMultiplier
+        * angryMultiplier
         * speMultiplier
         * gimmickMultiplier
         * mineMultiplier
-        * angryMultiplier
         * stageMultiplier;
     
     // 結果表示
