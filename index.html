@@ -51,6 +51,14 @@
 
             <div class="grid-item">
                 <label class="check-label">
+                    <input type="checkbox" id="chk_warp" onchange="toggleInput('warpCount', 'chk_warp')">
+                    超アンチワープ<br>（ワープ数）
+                </label>
+                <input type="number" id="warpCount" placeholder="数" value="1" oninput="calculate()" disabled>
+            </div>
+
+            <div class="grid-item">
+                <label class="check-label">
                     <input type="checkbox" id="chk_soko" onchange="toggleInput('sokoSelect', 'chk_soko')">
                     底力
                 </label>
@@ -64,14 +72,6 @@
 
             <div class="grid-item">
                 <label class="check-label">
-                    <input type="checkbox" id="chk_warp" onchange="toggleInput('warpCount', 'chk_warp')">
-                    超アンチワープ<br>（ワープ数）
-                </label>
-                <input type="number" id="warpCount" placeholder="数" value="1" oninput="calculate()" disabled>
-            </div>
-
-            <div class="grid-item">
-                <label class="check-label">
                     <input type="checkbox" id="chk_custom" onchange="toggleInput('customRate', 'chk_custom')">
                     キラー倍率
                 </label>
@@ -81,7 +81,7 @@
             <div class="grid-item">
                 <label class="check-label">
                     <input type="checkbox" id="chk_wboost" onchange="togglewboostInputs()">
-                    ブースト (値/4)
+                    ウォールブースト
                 </label>
                 <div class="bottom-stack">
                     <select id="wboostGrade" onchange="calculate()" disabled>
@@ -90,7 +90,7 @@
                         <option value="2.5">L (2.5)</option>
                         <option value="3.0">EL (3.0)</option>
                     </select>
-                    <input type="number" id="wboostVal" placeholder="数値を入力" value="4" oninput="calculate()" disabled>
+                    <input type="number" id="wboostVal" placeholder="数値を入力" oninput="calculate()" disabled>
                 </div>
             </div>
 
