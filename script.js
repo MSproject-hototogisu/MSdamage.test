@@ -66,13 +66,6 @@ function calculate() {
         sokoMultiplier = parseFloat(document.getElementById('sokoSelect').value);
     }
 
-    // キラー倍率
-    let killerMultiplier = 1.0;
-    if (document.getElementById('chk_killer').checked) {
-        const val = parseFloat(document.getElementById('killerRate').value);
-        if (!isNaN(val)) killerMultiplier = val;
-    }
-
     // ワープ数
     let enemyMultiplier = 1.0;
     if (document.getElementById('chk_warp').checked) {
@@ -98,6 +91,27 @@ function calculate() {
         if (!isNaN(val)) {
             mboostMultiplier = (val / 4) * grade;
         }
+    }
+
+    // キラー倍率
+    let killerMultiplier = 1.0;
+    if (document.getElementById('chk_killer').checked) {
+        const val = parseFloat(document.getElementById('killerRate').value);
+        if (!isNaN(val)) killerMultiplier = val;
+    }
+
+    // バフ倍率
+    let killerMultiplier = 1.0;
+    if (document.getElementById('chk_buff').checked) {
+        const val = parseFloat(document.getElementById('buffRate').value);
+        if (!isNaN(val)) buffMultiplier = val;
+    }
+
+    // バフ倍率
+    let killerMultiplier = 1.0;
+    if (document.getElementById('chk_guardian').checked) {
+        const val = parseFloat(document.getElementById('guardianRate').value);
+        if (!isNaN(val)) guardianMultiplier = val;
     }
 
     // 弱点倍率
