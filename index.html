@@ -21,7 +21,7 @@
             padding: 24px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            max-width: 800px; /* 横並び4つにするため、少し幅を広げました */
+            max-width: 800px;
             width: 100%;
         }
 
@@ -62,6 +62,13 @@
             color: #9aa0a6;
         }
 
+        /* 攻撃力とゲージを横並びにするためのクラス */
+        .input-with-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* 入力欄とチェックボックスの間隔 */
+        }
+
         /* --- カテゴリ枠 --- */
         .category-section {
             margin-bottom: 20px;
@@ -80,22 +87,21 @@
             padding-bottom: 5px;
         }
 
-        /* --- 4列グリッドレイアウト (ここが重要) --- */
+        /* --- 4列グリッドレイアウト --- */
         .grid-4-col {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 1行に4つ均等配置 */
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
-            align-items: start; /* 上揃え */
+            align-items: start;
         }
 
-        /* スマホなどの狭い画面では2列にするレスポンシブ対応 */
         @media (max-width: 600px) {
             .grid-4-col {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        /* --- グリッド内のアイテム（入力欄セット） --- */
+        /* --- グリッド内のアイテム --- */
         .grid-item {
             display: flex;
             flex-direction: column;
@@ -111,7 +117,7 @@
             color: #9aa0a6;
             font-size: 0.85rem;
             cursor: pointer;
-            min-height: 24px; /* 高さ合わせ */
+            min-height: 24px;
         }
         
         input[type="checkbox"] {
@@ -121,9 +127,9 @@
 
         /* --- トグルボタン --- */
         .toggle-btn {
-            padding: 0; /* 高さを調整 */
-            height: 100%; /* 親要素に合わせる */
-            min-height: 42px; /* 入力欄と高さを合わせる目安 */
+            padding: 0;
+            height: 100%;
+            min-height: 42px;
             font-size: 0.9rem;
             border: 2px solid #5f6368;
             background-color: #3c4043;
@@ -146,11 +152,6 @@
 
         .toggle-btn:hover {
             opacity: 0.9;
-        }
-
-        /* ボタンの上にラベル分の余白を作って高さを揃えるためのクラス */
-        .btn-spacer {
-            margin-top: 30px; /* ラベルの高さ分下げる */
         }
 
         /* --- 結果表示 --- */
@@ -183,8 +184,15 @@
     <h1>ダメージ計算ツール</h1>
 
     <div class="main-input">
-        <label for="attack">攻撃力 (Base Attack)</label>
-        <input type="number" id="attack" placeholder="数値を入力" oninput="calculate()">
+        <label for="attack">攻撃力</label>
+        <div class="input-with-checkbox">
+            <input type="number" id="attack" placeholder="数値を入力" oninput="calculate()" style="flex: 1;">
+            
+            <label class="check-label" style="margin-bottom: 0; white-space: nowrap;">
+                <input type="checkbox" id="chk_gauge" onchange="calculate()">
+                ゲージ (x1.2)
+            </label>
+        </div>
     </div>
 
     <div class="category-section">
@@ -233,8 +241,6 @@
                 </label>
                 <input type="number" id="warpCount" placeholder="数" value="1" oninput="calculate()" disabled>
             </div>
-
-
 
             <div class="grid-item">
                 <label class="check-label">
@@ -301,35 +307,41 @@
 
     // 計算のメイン処理
     function calculate() {
-        // 攻撃力
+        // 1. 攻撃力
         const attack = parseFloat(document.getElementById('attack').value) || 0;
 
-        // ボタン倍率
+        // 2. ゲージ倍率 (新規追加)
+        let gaugeMultiplier = 1.0;
+        if (document.getElementById('chk_gauge').checked) {
+            gaugeMultiplier = 1.2;
+        }
+
+        // 3. ボタン倍率
         let buttonMultiplier = 1.0;
         for (const [id, isActive] of Object.entries(activeStates)) {
             if (isActive) buttonMultiplier *= BUTTON_VALUES[id];
         }
 
-        // マインスイーパー
+        // 4. マインスイーパー
         let msMultiplier = 1.0;
         if (document.getElementById('chk_ms').checked) {
             msMultiplier = parseFloat(document.getElementById('msSelect').value);
         }
         
-        // 底力
+        // 5. 底力
         let sokoMultiplier = 1.0;
         if (document.getElementById('chk_soko').checked) {
             sokoMultiplier = parseFloat(document.getElementById('sokoSelect').value);
         }
 
-        // キラー倍率
+        // 6. キラー倍率
         let customMultiplier = 1.0;
         if (document.getElementById('chk_custom').checked) {
             const val = parseFloat(document.getElementById('customRate').value);
             if (!isNaN(val)) customMultiplier = val;
         }
 
-        // ワープ数による倍率
+        // 7. ワープ数による倍率
         let enemyMultiplier = 1.0;
         if (document.getElementById('chk_warp').checked) {
             const count = parseFloat(document.getElementById('warpCount').value) || 0;
@@ -337,11 +349,8 @@
             enemyMultiplier = 1 + (count * 0.05);
         }
 
-        // 紋章などの固定倍率以外の特殊計算があればここに追加
-        // (今回はすべて buttonMultiplier に含まれているか、上記で計算済み)
-
-        // 最終計算
-        const finalDamage = attack * buttonMultiplier * msMultiplier * sokoMultiplier * customMultiplier * enemyMultiplier;
+        // 最終計算 (ゲージ倍率を追加)
+        const finalDamage = attack * gaugeMultiplier * buttonMultiplier * msMultiplier * sokoMultiplier * customMultiplier * enemyMultiplier;
 
         // 結果表示
         document.getElementById('result').innerText = Math.floor(finalDamage).toLocaleString();
