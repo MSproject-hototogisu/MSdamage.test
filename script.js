@@ -213,6 +213,14 @@ function calculate() {
         mineMultiplier = parseFloat(mineInput.value) || 1.0;
     }
 
+    // 怒り倍率
+    let angryMultiplier = 1.0;
+    const angryCheck = document.getElementById('chk_angry');
+    const angrySelect = document.getElementById('angrySelect');
+    if (angryCheck && angryCheck.checked && angrySelect) {
+        angryMultiplier = parseFloat(angrySelect.value) || 1.0;
+    }
+
     // --- ステージ倍率 ---
     const stageSelect = document.getElementById('stageEffectSelect');
     const stageCheck = document.getElementById('chk_stageSpecial');
@@ -259,6 +267,7 @@ function calculate() {
         * defMultiplier
         * gimmickMultiplier
         * mineMultiplier
+        * angryMultiplier
         * stageMultiplier;
     
     // 結果表示
