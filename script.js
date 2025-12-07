@@ -86,14 +86,6 @@ function calculate() {
         sokoMultiplier = parseFloat(sokoSelect.value) || 1.0;
     }
 
-    // 底力
-    let auraMultiplier = 1.0;
-    const auraCheck = document.getElementById('chk_aura');
-    const auraSelect = document.getElementById('auraSelect');
-    if (auraCheck && auraCheck.checked && auraSelect) {
-        auraMultiplier = parseFloat(auraSelect.value) || 1.0;
-    }
-
     // ウォールブースト
     let wboostMultiplier = 1.0;
     const wbCheck = document.getElementById('chk_wboost');
@@ -101,7 +93,9 @@ function calculate() {
     const wbVal = document.getElementById('wboostVal');
     if (wbCheck && wbCheck.checked && wbGrade && wbVal) {
         const grade = parseFloat(wbGrade.value) || 1.5;
+        // セレクトボックスの値を数値として取得
         const val = parseFloat(wbVal.value) || 0;
+        
         if (val > 0) {
             wboostMultiplier = 1 + ((grade - 1) * (val / 4)); 
         }
@@ -223,7 +217,6 @@ function calculate() {
     }
 
     // --- 最終計算 ---
-    // ★ここで actualAttack (素+加撃) を使用しています
     const finalDamage = actualAttack 
         * gaugeMultiplier
         * ab1Multiplier 
@@ -231,7 +224,6 @@ function calculate() {
         * msMultiplier
         * warpMultiplier
         * sokoMultiplier
-        * auraMultiplier
         * wboostMultiplier
         * mboostMultiplier
         * killerMultiplier
@@ -253,5 +245,5 @@ function calculate() {
     }
 }
 
-// ページ読み込み時に初期計算を実行
+// 初期化
 calculate();
