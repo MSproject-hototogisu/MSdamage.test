@@ -101,7 +101,7 @@
             }
         }
 
-        /* --- グリッド内のアイテム (ここを修正) --- */
+        /* --- グリッド内のアイテム --- */
         .grid-item {
             display: flex;
             flex-direction: column;
@@ -116,6 +116,15 @@
             margin-top: auto;
         }
 
+        /* 複数の入力欄をまとめて下揃えにするためのクラス（今回追加） */
+        .grid-item > .bottom-stack {
+            margin-top: auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
         /* --- チェックボックス付きラベル --- */
         .check-label {
             display: flex;
@@ -126,13 +135,13 @@
             font-size: 0.85rem;
             cursor: pointer;
             min-height: 24px;
-            line-height: 1.4; /* 行間を少し広げて読みやすく */
+            line-height: 1.4;
         }
         
         input[type="checkbox"] {
             transform: scale(1.2);
             cursor: pointer;
-            margin-top: 2px; /* テキストの1行目にチェックボックスを合わせる */
+            margin-top: 2px;
         }
 
         /* --- トグルボタン --- */
@@ -260,11 +269,27 @@
                 <input type="number" id="customRate" value="1.0" step="0.01" oninput="calculate()" disabled>
             </div>
 
+            <div class="grid-item">
+                <label class="check-label">
+                    <input type="checkbox" id="chk_complex" onchange="toggleComplexInputs()">
+                    ブースト (値/4)
+                </label>
+                <div class="bottom-stack">
+                    <select id="complexGrade" onchange="calculate()" disabled>
+                        <option value="1.5">無印 (1.5)</option>
+                        <option value="2.0" selected>M (2.0)</option>
+                        <option value="2.5">L (2.5)</option>
+                        <option value="3.0">EL (3.0)</option>
+                    </select>
+                    <input type="number" id="complexVal" placeholder="数値を入力" value="4" oninput="calculate()" disabled>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <div class="category-section">
-        <h3 class="category-title">紋章</h3>
+        <h3 class="category-title">特殊条件・敵倍率</h3>
         
         <div class="grid-4-col">
             <div class="grid-item">
@@ -295,19 +320,13 @@
         emb1: 1.25, emb2: 1.10, emb3: 1.10, emb4: 1.08
     };
 
-    // 初期状態
     let activeStates = {
         ab1: false, ab2: false,
         emb1: false, emb2: false, emb3: false, emb4: false
     };
 
-    // ボタンのトグル処理
     function toggleButton(id) {
-        // activeStatesにキーがない場合の安全策
-        if (activeStates[id] === undefined) {
-            activeStates[id] = false;
-        }
-
+        if (activeStates[id] === undefined) activeStates[id] = false;
         activeStates[id] = !activeStates[id];
         const btn = document.getElementById(id);
         if (activeStates[id]) {
@@ -318,21 +337,28 @@
         calculate();
     }
 
-    // 入力欄の有効/無効切り替え処理
+    // 通常の入力欄切り替え
     function toggleInput(inputId, checkboxId) {
         const input = document.getElementById(inputId);
         const checkbox = document.getElementById(checkboxId);
-        
         input.disabled = !checkbox.checked;
         calculate();
     }
 
-    // 計算のメイン処理
+    // 新規追加: 等級と数値の2つを切り替える関数
+    function toggleComplexInputs() {
+        const isChecked = document.getElementById('chk_complex').checked;
+        document.getElementById('complexGrade').disabled = !isChecked;
+        document.getElementById('complexVal').disabled = !isChecked;
+        calculate();
+    }
+
+    // 計算メイン処理
     function calculate() {
         // 1. 攻撃力
         const attack = parseFloat(document.getElementById('attack').value) || 0;
 
-        // 2. ゲージ倍率
+        // 2. ゲージ
         let gaugeMultiplier = 1.0;
         if (document.getElementById('chk_gauge').checked) {
             gaugeMultiplier = 1.2;
@@ -363,22 +389,31 @@
             if (!isNaN(val)) customMultiplier = val;
         }
 
-        // 7. ワープ数による倍率
+        // 7. ワープ数
         let enemyMultiplier = 1.0;
         if (document.getElementById('chk_warp').checked) {
             const count = parseFloat(document.getElementById('warpCount').value) || 0;
-            // 式: 1 + (ワープ数 * 0.05)
             enemyMultiplier = 1 + (count * 0.05);
         }
 
+        // 8. 新規追加: (入力数)/4 * 等級
+        let complexMultiplier = 1.0;
+        if (document.getElementById('chk_complex').checked) {
+            const grade = parseFloat(document.getElementById('complexGrade').value);
+            const val = parseFloat(document.getElementById('complexVal').value);
+            // 値が入力されていれば計算 (例: 入力4, M=2.0 => 4/4*2.0 = 2.0倍)
+            if (!isNaN(val)) {
+                complexMultiplier = (val / 4) * grade;
+            }
+        }
+
         // 最終計算
-        const finalDamage = attack * gaugeMultiplier * buttonMultiplier * msMultiplier * sokoMultiplier * customMultiplier * enemyMultiplier;
+        const finalDamage = attack * gaugeMultiplier * buttonMultiplier * msMultiplier * sokoMultiplier * customMultiplier * enemyMultiplier * complexMultiplier;
 
         // 結果表示
         document.getElementById('result').innerText = Math.floor(finalDamage).toLocaleString();
     }
 
-    // 初期化
     calculate();
 </script>
 
