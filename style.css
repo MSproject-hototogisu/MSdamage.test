@@ -248,7 +248,7 @@ input, select, button {
 }
 
 #debug-timestamp {
-    position: fixed;       /* スクロールしても位置を固定 */
+    position: absolute;       /* 固定 */
     top: 5px;              /* 上から5px */
     right: 5px;            /* 右から5px */
     background-color: rgba(0, 0, 0, 0.7); /* 背景を半透明の黒に */
