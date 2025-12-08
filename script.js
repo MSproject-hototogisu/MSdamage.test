@@ -417,7 +417,7 @@ if (debugElem) {
     const min = String(d.getMinutes()).padStart(2, '0');
 
     // 秒を省いて表示
-    debugElem.innerText = `Update: ${year}-${month}-${day} ${hours}:${min}`;
+    debugElem.innerText = `最終更新: ${year}-${month}-${day} ${hours}:${min}`;
 }
 
 // 初期化実行
