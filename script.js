@@ -264,7 +264,7 @@ function calculate() {
         // 画面上の実質倍率表示を更新 (小数点第5位まで表示)
         const displayElem = document.getElementById('stageRealRate');
         if (displayElem) {
-            displayElem.innerText = Math.floor(stageMultiplier * 100000) / 100000;
+            displayElem.innerText = Math.floor(stageMultiplier * 1000000) / 1000000;
         }
     }
 
