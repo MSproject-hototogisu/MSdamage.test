@@ -128,6 +128,10 @@ function calculate() {
         mboostMultiplier = parseFloat(mbSelect.value) || 1.0;
     }
 
+    // 超パワー型 (初撃x1.2)
+    const ab4Elem = document.getElementById('chk_ab4');
+    let ab4Multiplier = (ab4Elem && ab4Elem.checked) ? 1.2 : 1.0;
+
     // キラー倍率
     let killerMultiplier = 1.0;
     const killerCheck = document.getElementById('chk_killer');
