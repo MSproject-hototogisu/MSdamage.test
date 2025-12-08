@@ -230,7 +230,6 @@ function calculate() {
 
     // ギミック倍率
     let gimmickMultiplier = 1.0;
-    // 注: HTML側のIDが "chk_gimmick" か "chk_gimmck" か確認してください
     const gimCheck = document.getElementById('chk_gimmick'); 
     const gimInput = document.getElementById('gimmickRate');
     if (gimCheck && gimCheck.checked && gimInput) {
@@ -256,9 +255,17 @@ function calculate() {
         const isStageSpecial = stageCheck.checked;
         stageMultiplier = stageBase;
 
-        // 超バランス型計算
+// 超バランス型計算
         if (isStageSpecial && stageBase !== 1.0) {
-            stageMultiplier = ((stageBase - 1) / 0.33) * 0.596 + 1;
+            // 1. まず割り算を行う
+            let temp = (stageBase - 1) / 0.33;
+            
+            // 2. 割り算の結果生じた微細な誤差を消すため、小数第4位あたりで四捨五入して整える
+            // (2.9998-1)/0.33 = 6.06 なので、これで綺麗な 6.06 になります
+            temp = Math.round(temp * 10000) / 10000;
+
+            // 3. 残りの計算を行う
+            stageMultiplier = temp * 0.596 + 1;
         }
 
         // 画面上の実質倍率表示を更新 (小数点第5位まで表示)
