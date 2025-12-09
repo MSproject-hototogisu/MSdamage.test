@@ -340,3 +340,9 @@ input[type="checkbox"] {
         right: 5%;
     }
 }
+
+@media (min-width: 769px) {
+    .grid-4-col {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+    }
+}
