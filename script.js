@@ -276,6 +276,8 @@ function calculate() {
              apply("友情底力" + getGradeSuffix('sokoSelect'), parseFloat(sokoVal) || 1.0);
         }
 
+        if (document.getElementById('chk_f_critical').checked) apply("友情コンボクリティカル", 3.0);
+
         if (document.getElementById('chk_ffield') && document.getElementById('chk_ffield').checked) {
             apply("友情フィールド", 1.5);
         }
