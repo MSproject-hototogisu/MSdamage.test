@@ -1,3 +1,41 @@
+/* -------------------------------------------------------
+   サイドメニュー & モード切り替え
+------------------------------------------------------- */
+function toggleMenu() {
+    const menu = document.getElementById('side-menu');
+    const overlay = document.getElementById('menu-overlay');
+    
+    menu.classList.toggle('active');
+    overlay.classList.toggle('active');
+}
+
+function switchMainMode(mode) {
+    const appContainer = document.getElementById('app-container');
+    const manualContainer = document.getElementById('manual-container');
+    const contactContainer = document.getElementById('contact-container'); // ★追加
+    const footer = document.getElementById('footer-result');
+
+    // メニューを閉じる
+    toggleMenu();
+
+    // 一旦すべて非表示にする
+    appContainer.style.display = 'none';
+    manualContainer.style.display = 'none';
+    if(contactContainer) contactContainer.style.display = 'none';
+    if(footer) footer.style.display = 'none'; // フッターも一旦隠す
+
+    // 選ばれたモードだけ表示する
+    if (mode === 'app') {
+        appContainer.style.display = 'block';
+        if(footer) footer.style.display = 'flex'; // 計算機モードのみフッター表示
+    } else if (mode === 'manual') {
+        manualContainer.style.display = 'block';
+    } else if (mode === 'contact') {
+        // ★追加: お問い合わせモード
+        if(contactContainer) contactContainer.style.display = 'block';
+    }
+}
+
 // --- ウォールブースト倍率定義 ---
 const WALL_BOOST_DATA = {
     "1.5": { 1: 1.12, 2: 1.25, 3: 1.37, 4: 1.5 },
@@ -168,6 +206,28 @@ function toggleResultDetails() {
 }
 
 /* -------------------------------------------------------
+   ★新規追加：加撃プリセットの反映
+   チェックボックスの状態に応じて入力欄の数値を増減させる
+------------------------------------------------------- */
+function updateBonus(amount, checkbox) {
+    const input = document.getElementById('attackBonus');
+    // 現在の入力値を取得（空なら0）
+    let currentVal = parseInt(input.value) || 0;
+
+    if (checkbox.checked) {
+        currentVal += amount; // チェックONなら加算
+    } else {
+        currentVal -= amount; // チェックOFFなら減算
+    }
+
+    // 計算結果を入力欄に反映
+    input.value = currentVal;
+    
+    // 全体の再計算を実行
+    calculate();
+}
+
+/* -------------------------------------------------------
    計算メイン処理 (詳細ログ作成機能付きに書き換え)
 ------------------------------------------------------- */
 function calculate() {
@@ -178,22 +238,36 @@ function calculate() {
     let baseAttack = parseFloat(attackElem.value) || 0;
     let actualAttack = 0;
 
+    // === 直殴りモード ===
     if (currentAttackMode === 'direct') {
+        // 直殴り: ベース + 加撃 (入力欄の値をそのまま使う)
         const bonusElem = document.getElementById('attackBonus');
-        const bonusAttack = parseFloat(bonusElem.value) || 0;
-        actualAttack = baseAttack + bonusAttack;
-        breakdown.push({ name: "攻撃力（加撃込）", val: actualAttack.toLocaleString() });
-    } else {
-    const yuugekiVal = parseFloat(document.getElementById('friendYuugekiSelect').value) || 1.0;
-        actualAttack = Math.floor((baseAttack * yuugekiVal) + 0.00001);
+        const manualBonus = parseFloat(bonusElem.value) || 0;
+        
+        /* ★削除・変更点：
+           以前ここにあった「presetBonus」の加算処理は削除しました。
+           チェックボックスの値は「manualBonus（入力欄）」に含まれるようになったためです。
+        */
+
+        // 合計を算出
+        actualAttack = baseAttack + manualBonus;
+        
+        // ログ記録
+        breakdown.push({ name: "攻撃力", val: baseAttack.toLocaleString() });
+        // 内訳表示もシンプルに入力欄の値のみを表示
+        if (manualBonus > 0) breakdown.push({ name: "加撃", val: "+" + manualBonus.toLocaleString() });
+    }
+
+
+    
+    else {
+        const yuugekiVal = parseFloat(document.getElementById('friendYuugekiSelect').value) || 1.0;
+        actualAttack = Math.floor(baseAttack * yuugekiVal);
         
         // 友撃の等級を取得して表示名に追加
         const yuugekiSuffix = getGradeSuffix('friendYuugekiSelect');
         breakdown.push({ name: `友情コンボ威力 (×友撃${yuugekiSuffix})`, val: actualAttack.toLocaleString() });
     }
-
-    const totalDisplay = document.getElementById('totalAttackDisplay');
-    if (totalDisplay) totalDisplay.innerText = actualAttack.toLocaleString();
 
     let totalMultiplier = 1.0;
 
@@ -276,8 +350,6 @@ function calculate() {
              apply("友情底力" + getGradeSuffix('sokoSelect'), parseFloat(sokoVal) || 1.0);
         }
 
-        if (document.getElementById('chk_f_critical').checked) apply("友情コンボクリティカル", 3.0);
-
         if (document.getElementById('chk_ffield') && document.getElementById('chk_ffield').checked) {
             apply("友情フィールド", 1.5);
         }
@@ -294,6 +366,9 @@ function calculate() {
     // === 共通 ===
     if (document.getElementById('chk_aura').checked) {
         apply("パワーオーラ" + getGradeSuffix('auraSelect'), parseFloat(document.getElementById('auraSelect').value) || 1.0);
+    }
+    if (document.getElementById('chk_hiyoko') && document.getElementById('chk_hiyoko').checked) {
+        apply("ヒヨコ", 1/3);
     }
     if (document.getElementById('chk_killer').checked) {
         apply("キラー", parseFloat(document.getElementById('killerRate').value) || 1.0);
