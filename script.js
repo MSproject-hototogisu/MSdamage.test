@@ -1,3 +1,102 @@
+// --- 属性倍率データの定義 ---
+const STAGE_ATTR_DATA = {
+    advantage: {
+        label: "有利",
+        options: [
+            { name: "通常 (x1.33)", val: 1.33 },
+            { name: "属性効果UP (x1.5016)", val: 1.5016 },
+            { name: "属性効果超UP (x1.99)", val: 1.99 },
+            { name: "属性効果超絶UP (x2.9998)", val: 2.9998 },
+            { name: "エレメント系", val: "custom" } // ★ここに追加
+        ]
+    },
+    disadvantage: {
+        label: "不利",
+        options: [
+            { name: "通常 (x0.66)", val: 0.66 },
+            { name: "属性効果UP (x0.4832)", val: 0.4832 },
+            { name: "属性効果超UP (x0.3)", val: 0.30 },
+            { name: "属性効果超絶UP (x0.3)", val: 0.30 },
+        ]
+    }
+};
+
+/* -------------------------------------------------------
+   属性倍率UIの更新 (タイプ選択変更時に発火)
+------------------------------------------------------- */
+function updateStageUI() {
+    const typeSelect = document.getElementById('stageTypeSelect');
+    const magSelect = document.getElementById('stageMagnitudeSelect');
+    const customInput = document.getElementById('customStageRate');
+    const superBalanceArea = document.getElementById('group-super-balance');
+
+    if (!typeSelect || !magSelect) return;
+
+    const type = typeSelect.value;
+
+    if (type === 'none') {
+        // 「なし」の場合: 2段目と入力欄を隠す
+        magSelect.style.display = 'none';
+        customInput.style.display = 'none';
+        if(superBalanceArea) superBalanceArea.style.display = 'none';
+    } else {
+        // 「有利/不利」の場合: 2段目を表示
+        magSelect.style.display = 'block';
+        
+        // --- プルダウン生成 ---
+        const currentVal = magSelect.value; // 値を一時保存
+        magSelect.innerHTML = "";
+        const data = STAGE_ATTR_DATA[type];
+        if (data) {
+            data.options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.val;
+                option.text = opt.name;
+                magSelect.appendChild(option);
+            });
+        }
+        
+        // 以前の値があれば復元、なければ先頭(通常)を選択
+        if (currentVal && Array.from(magSelect.options).some(o => o.value === currentVal)) {
+            magSelect.value = currentVal;
+        }
+
+        // --- 超バランス型の表示制御 ---
+        if (superBalanceArea) {
+            superBalanceArea.style.display = (type === 'advantage') ? 'block' : 'none';
+        }
+    }
+
+    // 2段目の状態に合わせて入力欄の表示/非表示を更新
+    handleStageMagnitudeChange(); 
+}
+
+/* -------------------------------------------------------
+   ★新規: 倍率詳細プルダウン変更時の処理
+   「個別入力」が選ばれた時だけ入力欄を出す
+------------------------------------------------------- */
+function handleStageMagnitudeChange() {
+    const typeSelect = document.getElementById('stageTypeSelect');
+    const magSelect = document.getElementById('stageMagnitudeSelect');
+    const customInput = document.getElementById('customStageRate');
+
+    // 「なし」選択中、または要素がない場合は何もしない
+    if (!typeSelect || typeSelect.value === 'none') {
+        customInput.style.display = 'none';
+        calculate();
+        return;
+    }
+
+    // 「個別入力(custom)」が選ばれているか判定
+    if (magSelect.value === 'custom') {
+        customInput.style.display = 'block';
+    } else {
+        customInput.style.display = 'none';
+    }
+    
+    calculate();
+}
+
 /* -------------------------------------------------------
    サイドメニュー & モード切り替え
 ------------------------------------------------------- */
@@ -372,10 +471,6 @@ function calculate() {
              apply("友情底力" + getGradeSuffix('sokoSelect'), parseFloat(sokoVal) || 1.0);
         }
 
-               if (document.getElementById('chk_fcritical') && document.getElementById('chk_fcritical').checked) {
-            apply("友情コンボクリティカル", 3.0);
-        }
-
         if (document.getElementById('chk_ffield') && document.getElementById('chk_ffield').checked) {
             apply("友情フィールド", 1.5);
         }
@@ -488,32 +583,49 @@ function calculate() {
         apply("特殊倍率", parseFloat(document.getElementById('specialRate').value) || 1.0);
     }
 
-    // ステージ倍率
-    const stageSelect = document.getElementById('stageEffectSelect');
+// ステージ倍率
+    const typeSelect = document.getElementById('stageTypeSelect');
+    const magSelect = document.getElementById('stageMagnitudeSelect');
     const customInput = document.getElementById('customStageRate');
-    if (stageSelect) {
+
+    if (typeSelect) {
         let stageBase = 1.0;
         let rateName = "属性倍率";
-        
-        // セレクトボックスのテキストを取得して名前に反映（例: 属性効果超絶UP）
-        if (stageSelect.value === 'custom') {
-            stageBase = parseFloat(customInput.value) || 1.0;
-            rateName = "属性倍率(手動)";
+        const type = typeSelect.value;
+
+        if (type === 'none') {
+            stageBase = 1.0;
+            rateName = "属性倍率(なし)";
         } else {
-            stageBase = parseFloat(stageSelect.value) || 1.0;
-            // 選択中のテキストを取得 (例: "通常 (x1.33)" -> "通常")
-            const text = stageSelect.options[stageSelect.selectedIndex].text;
-            const label = text.split(' ')[0];
-            if (label !== "なし") {
-                rateName = "属性倍率(" + label + ")";
+            // 有利 or 不利
+            // ★ここが変更点: customなら入力値、それ以外ならプルダウンの値
+            if (magSelect.value === 'custom') {
+                stageBase = parseFloat(customInput.value) || 1.0;
+                rateName = "属性倍率(手動)";
+            } else {
+                stageBase = parseFloat(magSelect.value) || 1.0;
+                
+                // ログ名作成
+                const typeText = typeSelect.options[typeSelect.selectedIndex].text;
+                let magText = "";
+                if (magSelect.selectedIndex >= 0) {
+                     // "通常 (x1.33)" -> "通常" だけ取り出す
+                     magText = "・" + magSelect.options[magSelect.selectedIndex].text.split(' ')[0];
+                }
+                rateName = `属性倍率(${typeText}${magText})`;
             }
         }
 
         let stageMultiplier = stageBase;
-        if (document.getElementById('chk_stageSpecial').checked && stageBase !== 1.0) {
-            let temp = ((stageBase - 1) / 0.33) * 0.596 + 1;
-            stageMultiplier = Math.round(temp * 100000) / 100000;
-            rateName = "超バランス型(" + rateName.replace("属性倍率", "").replace(/[()]/g, "") + ")";
+
+        // 超バランス型の計算 (有利選択時のみ)
+        if (type === 'advantage' && document.getElementById('chk_stageSpecial').checked) {
+            // 倍率1.0超えの場合のみ適用 (手動入力で1.0以下にした場合などを除外するため)
+            if (stageBase > 1.0) {
+                let temp = ((stageBase - 1) / 0.33) * 0.596 + 1;
+                stageMultiplier = Math.round(temp * 100000) / 100000;
+                rateName = "超バランス型(" + rateName.replace("属性倍率", "").replace(/[()]/g, "") + ")";
+            }
         }
         
         apply(rateName, stageMultiplier);
@@ -685,3 +797,4 @@ function resetAll() {
 
 // 初期化実行
 switchAttackMode();
+updateStageUI();
