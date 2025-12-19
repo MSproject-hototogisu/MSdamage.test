@@ -26,49 +26,43 @@ const STAGE_ATTR_DATA = {
 ------------------------------------------------------- */
 function updateStageUI() {
     const typeSelect = document.getElementById('stageTypeSelect');
-    const magSelect = document.getElementById('stageMagnitudeSelect');
+    const magSelect = document.getElementById('stageMagSelect');
     const customInput = document.getElementById('customStageRate');
-    const superBalanceArea = document.getElementById('group-super-balance');
 
-    if (!typeSelect || !magSelect) return;
+    const type = typeSelect.value; // 'none', 'advantage', 'disadvantage'
 
-    const type = typeSelect.value;
-
+    // 1. 「なし(等倍)」の場合
     if (type === 'none') {
-        // 「なし」の場合: 2段目と入力欄を隠す
-        magSelect.style.display = 'none';
-        customInput.style.display = 'none';
-        if(superBalanceArea) superBalanceArea.style.display = 'none';
-    } else {
-        // 「有利/不利」の場合: 2段目を表示
-        magSelect.style.display = 'block';
+        // 中身をクリアして無効化する
+        magSelect.innerHTML = '<option value="1.0">-</option>';
+        magSelect.disabled = true; 
         
-        // --- プルダウン生成 ---
-        const currentVal = magSelect.value; // 値を一時保存
-        magSelect.innerHTML = "";
+        if (customInput) customInput.style.display = 'none';
+    } 
+    else {
+        // 2. 「有利」「不利」の場合
+        magSelect.disabled = false; 
+
+        // データを取得して選択肢を生成
         const data = STAGE_ATTR_DATA[type];
         if (data) {
+            magSelect.innerHTML = "";
             data.options.forEach(opt => {
                 const option = document.createElement('option');
-                option.value = opt.val;
                 option.text = opt.name;
+                option.value = opt.val;
                 magSelect.appendChild(option);
             });
         }
         
-        // 以前の値があれば復元、なければ先頭(通常)を選択
-        if (currentVal && Array.from(magSelect.options).some(o => o.value === currentVal)) {
-            magSelect.value = currentVal;
-        }
-
-        // --- 超バランス型の表示制御 ---
-        if (superBalanceArea) {
-            superBalanceArea.style.display = (type === 'advantage') ? 'block' : 'none';
+        // 「エレメント系(custom)」などが選ばれているかもしれないのでチェック
+        if (typeof checkCustomStage === 'function') {
+            checkCustomStage();
         }
     }
-
-    // 2段目の状態に合わせて入力欄の表示/非表示を更新
-    handleStageMagnitudeChange(); 
+    
+    // 変更を反映して計算
+    calculate();
 }
 
 /* -------------------------------------------------------
