@@ -588,8 +588,8 @@ function calculate() {
     if (document.getElementById('chk_killer').checked) {
         apply("その他キラー", parseFloat(document.getElementById('killerRate').value) || 1.0);
     }
-    if (document.getElementById('chk_sleep').checked) {
-        apply("睡眠", parseFloat(document.getElementById('sleepRate').value) || 1.0);
+    if (document.getElementById('chk_sleep') && document.getElementById('chk_sleep').checked) {
+        apply("睡眠", 1.5);
     }
     if (document.getElementById('chk_buff').checked) {
         apply("バフ", parseFloat(document.getElementById('buffRate').value) || 1.0);
