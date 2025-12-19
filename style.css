@@ -372,11 +372,15 @@ input[type="checkbox"] {
 /* ==============================================
    4. UIコンポーネント
    ============================================== */
+/* タブ切り替えボタン */
 .tab-container {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    background-color: #eee;
+    padding: 4px;
+    border-radius: 4px; /* ★変更: 25px(または30px) から 4px へ */
+    gap: 4px; 
 }
 
 .tab-button {
@@ -385,7 +389,7 @@ input[type="checkbox"] {
     background-color: #e0e0e0;
     color: #555;
     font-weight: bold;
-    border-radius: 20px;
+    border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
     font-size: 14px;
@@ -405,7 +409,7 @@ input[type="checkbox"] {
     display: flex;
     justify-content: center;
     background-color: #eee;
-    border-radius: 4px;
+    border-radius: 25px;
     padding: 4px;
     margin: 0 auto 20px auto;
     width: fit-content;
@@ -413,17 +417,8 @@ input[type="checkbox"] {
 }
 
 .mode-switch-label {
-    position: relative;       
-    cursor: pointer;          
-    
-    padding: 4px 12px;        
-    border-radius: 4px;       
-    font-size: 0.8rem;
-    color: #666;
-    transition: all 0.3s ease;
-    display: flex;           
-    align-items: center;
-    justify-content: center;
+    position: relative;
+    cursor: pointer;
 }
 
 .mode-switch-label input {
