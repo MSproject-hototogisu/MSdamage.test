@@ -405,7 +405,7 @@ input[type="checkbox"] {
     display: flex;
     justify-content: center;
     background-color: #eee;
-    border-radius: 25px;
+    border-radius: 4px;
     padding: 4px;
     margin: 0 auto 20px auto;
     width: fit-content;
@@ -413,8 +413,17 @@ input[type="checkbox"] {
 }
 
 .mode-switch-label {
-    position: relative;
-    cursor: pointer;
+    position: relative;       
+    cursor: pointer;          
+    
+    padding: 4px 12px;        
+    border-radius: 4px;       
+    font-size: 0.8rem;
+    color: #666;
+    transition: all 0.3s ease;
+    display: flex;           
+    align-items: center;
+    justify-content: center;
 }
 
 .mode-switch-label input {
