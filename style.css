@@ -716,9 +716,9 @@ input[type="checkbox"] {
     background-color: #555555 !important;
 }
 
-/* 選択されている側のボタンを白くする */
+/* 選択されている側のボタンを黒くする */
 [data-theme="dark"] .mode-switch-label input:checked + .mode-switch-text {
-    background-color: #ffffff !important;
+    background-color: #000000 !important;
     color: var(--primary-dark) !important; /* 文字色は濃い緑 */
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
