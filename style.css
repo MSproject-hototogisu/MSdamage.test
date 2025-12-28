@@ -388,9 +388,9 @@ input[type="checkbox"] {
     color: var(--primary-color);
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-/* ダークモード時の選択時（白ボタン・緑文字） */
+/* ダークモード時の選択時（黒ボタン・緑文字） */
 [data-theme="dark"] .mode-switch-label input:checked + .mode-switch-text {
-    background-color: #ffffff !important;
+    background-color: #000000 !important;
     color: var(--primary-dark) !important;
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
