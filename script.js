@@ -598,6 +598,9 @@ function calculate() {
     if (document.getElementById('chk_guardian').checked) {
         apply("守護獣", parseFloat(document.getElementById('guardianRate').value) || 1.0);
     }
+    if (document.getElementById('chk_connect').checked) {
+        apply("コネクトスキル", parseFloat(document.getElementById('connectRate').value) || 1.0);
+    }
     if (document.getElementById('chk_other').checked) {
         apply("その他", parseFloat(document.getElementById('otherRate').value) || 1.0);
     }
