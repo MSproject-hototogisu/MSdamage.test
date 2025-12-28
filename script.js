@@ -898,8 +898,9 @@ function resetAll() {
     const realHpElem = document.getElementById('displayRealHp');
     if (realHpElem) realHpElem.innerText = "-";
 
-    // ★重要: リセット後のUI状態を更新して整合性を取る
     updateStageUI();
+
+    toggleMultiMode();
     
     calculate();
 }
