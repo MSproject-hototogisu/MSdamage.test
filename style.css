@@ -399,7 +399,7 @@ input[type="checkbox"] {
 }
 
 .tab-button {
-    padding: 10px 40px;
+    padding: 10px 0;
     border: none;
     background-color: transparent; /* 背景透明にし、hoverで色付け */
     color: var(--sub-text);
@@ -430,7 +430,7 @@ input[type="checkbox"] {
     display: flex;
     justify-content: center;
     background-color: var(--tab-bg);
-    border-radius: 4px; /* 四角く */
+    border-radius: 30px;
     padding: 4px;
     margin: 0 auto 20px auto;
     width: fit-content;
