@@ -706,3 +706,119 @@ input[type="checkbox"] {
         grid-template-columns: repeat(4, 1fr) !important;
     }
     }
+
+/* =======================================================
+   ダークモード対応 (CSS変数とオーバーライド)
+   ======================================================= */
+
+/* 1. 基本の色定義 (ライトモード/デフォルト) */
+:root {
+    --bg-color: #f9f9f9;           /* 全体の背景 */
+    --text-color: #333333;         /* 文字色 */
+    --card-bg: #ffffff;            /* 入力枠などの背景 */
+    --input-bg: #ffffff;           /* 入力フォームの背景 */
+    --border-color: #cccccc;       /* 枠線の色 */
+    --sub-text: #666666;           /* 薄い文字 */
+    --header-bg: #ffffff;          /* ヘッダー背景 */
+    --tab-bg: #eeeeee;             /* タブの背景 */
+    --hover-bg: #f0f0f0;           /* ホバー時の色 */
+}
+
+/* 2. ダークモード時の色定義 */
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --card-bg: #1e1e1e;
+    --input-bg: #2c2c2c;
+    --border-color: #444444;
+    --sub-text: #aaaaaa;
+    --header-bg: #1e1e1e;
+    --tab-bg: #333333;
+    --hover-bg: #3a3a3a;
+}
+
+/* 3. 各要素への適用 (既存スタイルを上書き) */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s; /* ふわっと切り替え */
+}
+
+/* ヘッダー */
+header {
+    background-color: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* コンテナ・カード類 */
+.input-group, .result-box, #history-log, 
+.mode-switch-container, .judgment-box,
+#menu-overlay .menu-content {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* 入力フォーム (数値入力・セレクトボックス) */
+input[type="number"], select, input[type="text"] {
+    background-color: var(--input-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* タブやスイッチの背景 */
+.tab-container, .mode-switch-container {
+    background-color: var(--tab-bg) !important;
+}
+
+/* ボタン類 (タブなど) */
+.tab-button, .mode-switch-label {
+    color: var(--text-color);
+}
+.tab-button.active, .mode-switch-input:checked + .mode-switch-label {
+    color: #fff; /* アクティブ時は白文字のまま */
+}
+
+/* わくわくの実パネル */
+.fruit-label {
+    background-color: var(--hover-bg) !important;
+    color: var(--text-color) !important;
+}
+.fruit-item {
+    border-color: var(--border-color);
+}
+.fruit-item:hover {
+    background-color: var(--hover-bg);
+}
+
+/* 文字色の微調整 */
+.section-title, .history-title, .log-close-btn {
+    color: var(--text-color) !important;
+}
+.detail-name { color: var(--sub-text); }
+.detail-val { color: var(--text-color); }
+
+/* --- 追加した切り替えボタンのスタイル --- */
+.header-icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: transform 0.2s;
+}
+.header-icon-btn:active { transform: scale(0.9); }
+
+/* テーマ切り替えボタン専用 (色は控えめに) */
+#theme-toggle-btn {
+    background-color: transparent; /* 背景透明 */
+    /* border: 1px solid var(--border-color); */
+}
+[data-theme="dark"] #theme-toggle-btn {
+    background-color: #333; /* ダーク時は少し背景をつける */
+}
