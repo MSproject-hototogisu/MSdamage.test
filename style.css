@@ -612,9 +612,7 @@ input[type="checkbox"] {
     border: 1px solid var(--border-color);
 }
 
-/* ==============================================
-   6. 履歴・説明書・お問い合わせ
-   ============================================== */
+/* --- 履歴ログ --- */
 #history-log {
     position: fixed;
     top: 65px;
@@ -631,13 +629,40 @@ input[type="checkbox"] {
     z-index: 9999;
     font-size: 13px;
 }
+
+/* 閉じるボタン (修正: 帯を削除し、右上に固定配置) */
+.log-close-btn {
+    position: absolute; /* 絶対配置に変更 */
+    top: 5px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #999;
+    cursor: pointer;
+    line-height: 30px;
+    text-align: center;
+    background-color: transparent; /* 背景透明 */
+    border: none; /* 枠線なし */
+    margin: 0;
+    padding: 0;
+    z-index: 100;
+}
+.log-close-btn:hover {
+    color: #f44336;
+}
+
 .history-title {
     font-weight: bold;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 5px;
     margin-bottom: 10px;
     color: var(--text-color);
+    /* 閉じるボタンと被らないよう少し右に余白を開けるなら */
+    margin-right: 20px; 
 }
+
 .history-list li {
     margin-bottom: 8px;
     border-bottom: 1px dashed var(--border-color);
@@ -649,24 +674,6 @@ input[type="checkbox"] {
     color: var(--sub-text);
     font-size: 11px;
 }
-.log-close-btn {
-    position: sticky;
-    top: 0;
-    text-align: right;
-    font-size: 28px;
-    font-weight: bold;
-    color: #999;
-    cursor: pointer;
-    line-height: 1;
-    background-color: var(--history-bg);
-    padding: 0 5px 5px 0;
-    margin: -15px -15px 5px -15px;
-    padding: 5px 15px;
-    z-index: 100;
-    border-bottom: 1px solid var(--border-color);
-    border-radius: 6px 6px 0 0;
-}
-.log-close-btn:hover { color: #f44336; }
 
 .manual-content { color: var(--text-color); }
 .manual-content h2 {
